@@ -1,6 +1,10 @@
 from datetime import datetime, date
+from functools import lru_cache
 
+import sqlalchemy
 from sqlalchemy import MetaData, Table, String, Column, DateTime, Date, Integer, Boolean, ForeignKey
+
+import config
 
 SHORT_TEXT_LENGTH = 60
 LONG_TEXT_LENGTH = 240
@@ -68,10 +72,13 @@ def build_schema_metadata() -> MetaData:
                     Column('comments', String(LONG_TEXT_LENGTH), nullable=False, default='none'))
 
     users_surgery = Table('SurgeryUsers', metadata,
-                            Column('user_id', ForeignKey(users.c.id)),
-                            Column('hospital_id', ForeignKey(surgery.c.id)))
+                          Column('user_id', ForeignKey(users.c.id)),
+                          Column('hospital_id', ForeignKey(surgery.c.id)))
 
     return metadata
 
-def db_engine():
-    pass
+
+@lru_cache(maxsize=1)
+def create_engine():
+    engine = sqlalchemy.create_engine(config.DB_URL, echo=True)
+    return engine
