@@ -1,9 +1,8 @@
-import config
-from registry import schema
+from registry.schema import Database
 
 
 def test_tables():
-    metadata = schema.build_schema_metadata()
+    metadata = Database.base.metadata
 
     expected_tables = [
         'UserTypes',
@@ -21,17 +20,6 @@ def test_tables():
         assert t in metadata.tables
 
 
-def test_create_engine():
-    engine = schema.create_engine()
-
-    assert engine
-    assert config.DB_URL in str(engine)
-
-
-def test_create_engine_singleton():
-    engine = schema.create_engine()
-    engine2 = schema.create_engine()
-    engine3 = schema.create_engine()
-
-    assert engine is engine2
-    assert engine2 is engine3
+def test_create_database():
+    Database.create_schema()
+    assert True
