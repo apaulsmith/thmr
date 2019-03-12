@@ -3,6 +3,7 @@ from datetime import datetime, date
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Boolean
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 import config
 
@@ -12,11 +13,16 @@ LONG_TEXT_LENGTH = 240
 
 class Database:
     engine = sqlalchemy.create_engine(config.DB_URL, echo=True)
+    session = sessionmaker(bind=engine)
     base = declarative_base()
 
     @staticmethod
     def create_schema():
         return Database.base.metadata.create_all(Database.engine)
+
+    @staticmethod
+    def create_session():
+        return Database.session()
 
 
 class UserTypes(Database.base):
@@ -46,7 +52,7 @@ class Patients(Database.base):
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    sex = Column(String(1), nullable=False)
+    gender = Column(String(1), nullable=False)
     age = Column(Integer(), nullable=True)
     phone1 = Column(String(20), nullable=True)
     phone2 = Column(String(20), nullable=True)
