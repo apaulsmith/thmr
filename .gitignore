@@ -123,3 +123,5 @@ dmypy.json
 # Mac Finder
 .DS_Store
 
+# Local SQLite files
+*.sqlite
