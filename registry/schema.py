@@ -13,7 +13,7 @@ LONG_TEXT_LENGTH = 240
 
 class Database:
     engine = sqlalchemy.create_engine(config.DB_URL, echo=True)
-    session = sessionmaker(bind=engine)
+    session = sessionmaker(bind=engine, autocommit=False)
     base = declarative_base()
 
     @staticmethod
@@ -25,33 +25,33 @@ class Database:
         return Database.session()
 
 
-class UserTypes(Database.base):
+class UserType(Database.base):
     __tablename__ = 'UserTypes'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
 
     def __repr__(self):
-        return "%s: [id='%d', type='%s']".format(self.__tablename__, self.id, self.type)
+        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
 
 
-class Users(Database.base):
+class User(Database.base):
     __tablename__ = 'Users'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     type = Column(ForeignKey('UserTypes.id'))
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
 
     def __repr__(self):
-        return "%s: [id='%d', type='%s', name='%s', ...]".format(self.__tablename__, self.id, self.type, self.name)
+        return "{}: [id='{}', type='{}', name='{}', ...]".format(self.__tablename__, self.id, self.type, self.name)
 
 
-class Patients(Database.base):
+class Patient(Database.base):
     __tablename__ = 'Patients'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
     gender = Column(String(1), nullable=False)
     age = Column(Integer(), nullable=True)
     phone1 = Column(String(20), nullable=True)
@@ -64,7 +64,7 @@ class Patients(Database.base):
     updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
 
     def __repr__(self):
-        return "%s: [id='%d', name='%s', ...]".format(self.__tablename__, self.id, self.name)
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
 class Hospitals(Database.base):
@@ -75,7 +75,7 @@ class Hospitals(Database.base):
     address = Column(String(LONG_TEXT_LENGTH), nullable=True)
 
     def __repr__(self):
-        return "%s: [id='%d', name='%s', ...]".format(self.__tablename__, self.id, self.name)
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
 class UsersHospitals(Database.base):
@@ -85,7 +85,7 @@ class UsersHospitals(Database.base):
     hospital_id = Column(ForeignKey('Hospitals.id'), primary_key=True)
 
     def __repr__(self):
-        return "%s: [user_id='%d', hospital_id='%d', ...]".format(self.__tablename__, self.user_id, self.hospital_id)
+        return "{}: [user_id='{}', hospital_id='{}', ...]".format(self.__tablename__, self.user_id, self.hospital_id)
 
 
 class Operations(Database.base):
@@ -96,7 +96,7 @@ class Operations(Database.base):
     long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
 
     def __repr__(self):
-        return "%s: [id='%d', short_name='%s', ...]".format(self.__tablename__, self.id, self.short_name)
+        return "{}: [id='{}', short_name='{}', ...]".format(self.__tablename__, self.id, self.short_name)
 
 
 class Surgery(Database.base):
@@ -122,7 +122,7 @@ class Surgery(Database.base):
     comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
 
     def __repr__(self):
-        return "%s: [id='%d', ...]".format(self.__tablename__, self.id)
+        return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
 
 
 class SurgeryUsers(Database.base):
@@ -132,4 +132,4 @@ class SurgeryUsers(Database.base):
     hospital_id = Column(ForeignKey('Surgery.id'), primary_key=True)
 
     def __repr__(self):
-        return "%s: [user_id='%d', hospital_id='%d']".format(self.__tablename__, self.user_id, self.hospital_id)
+        return "{}: [user_id='{}', hospital_id='{}']".format(self.__tablename__, self.user_id, self.hospital_id)
