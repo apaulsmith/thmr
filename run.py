@@ -1,7 +1,10 @@
 import argparse
 
+import flask
+
 import config as thmr_config
 from app import app
+from app.restful import CustomJSONEncoder, CustomJSONDecoder
 from registry.schema import Database
 from registry.tests import data_generator
 
@@ -11,20 +14,20 @@ if __name__ == '__main__':
     parser.add_argument('--create-all', default=False, action='store_true')
     parser.add_argument('--generate', help='Generate and write dummy test data into the database',
                         default=False, action='store_true')
-    parser.add_argument('--run-flask', help='Run the flask application', default=False, action='store_true')
+    parser.add_argument('--flask', help='Run the flask application', default=False, action='store_true')
 
     args = parser.parse_args()
 
-    app.database = Database(thmr_config.DB_URL)
+    database = Database(thmr_config.DB_URL)
 
     if args.drop_all:
-        app.database.drop_all()
+        database.drop_all()
 
     if args.create_all:
-        app.database.create_all()
+        database.create_all()
 
-    if args.generate_test_data:
-        session = app.database.create_session()
+    if args.generate:
+        session = database.create_session()
         with session.begin_nested():
             data_generator.create_sample_data(session,
                                               num_users=thmr_config.TEST_NUM_USERS,
@@ -32,5 +35,10 @@ if __name__ == '__main__':
                                               num_surgeries=thmr_config.TEST_NUM_SURGERIES)
         session.close()
 
-    if args.run_flask:
-        app.run()
+    if args.flask:
+        with app.app_context():
+            flask.current_app.database = database
+            flask.current_app.json_encoder = CustomJSONEncoder
+            flask.current_app.json_decoder = CustomJSONDecoder
+
+        app.run(debug=True)

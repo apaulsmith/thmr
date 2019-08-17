@@ -1,5 +1,5 @@
 import config as thmr_config
-from registry.schema import Database, Operations, UserType, User, Patient, Hospitals, Surgery
+from registry.schema import Database, Operation, UserType, User, Patient, Hospital, Surgery
 from registry.tests import names
 
 
@@ -35,13 +35,13 @@ def test_data_generate(database_session):
     assert thmr_config.TEST_NUM_USERS == found_users
     assert thmr_config.TEST_NUM_PATIENTS == database_session.query(Patient).count()
 
-    assert database_session.query(Hospitals).count() == len(names.cities)
-    assert database_session.query(Operations).count() == len(names.operations)
+    assert database_session.query(Hospital).count() == len(names.cities)
+    assert database_session.query(Operation).count() == len(names.operations)
 
     assert database_session.query(Surgery).count() == thmr_config.TEST_NUM_SURGERIES
     surgery = database_session.query(Surgery).first()
 
     assert database_session.query(
-        database_session.query(Operations).filter(Operations.id == surgery.operation.id).exists())
+        database_session.query(Operation).filter(Operation.id == surgery.operation.id).exists())
     assert database_session.query(
-        database_session.query(Hospitals).filter(Hospitals.id == surgery.hospital.id).exists())
+        database_session.query(Hospital).filter(Hospital.id == surgery.hospital.id).exists())

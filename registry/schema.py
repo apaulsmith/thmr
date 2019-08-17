@@ -27,80 +27,13 @@ class Database:
         return self.session()
 
 
-class UserType(Database.base):
-    __tablename__ = 'UserTypes'
+class ExtendedBase:
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-
-    def __repr__(self):
-        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
-
-
-class User(Database.base):
-    __tablename__ = 'Users'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-
-    type_id = Column(ForeignKey('UserTypes.id'))
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-
-    def __repr__(self):
-        return "{}: [id='{}', type='{}', name='{}', ...]".format(self.__tablename__, self.id, self.type, self.name)
-
-
-class Patient(Database.base):
-    __tablename__ = 'Patients'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    gender = Column(String(1), nullable=False)
-    age = Column(Integer(), nullable=True)
-    phone1 = Column(String(20), nullable=True)
-    phone2 = Column(String(20), nullable=True)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=True)
-    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
-    created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
-    created_by = Column('created_by', ForeignKey('Users.id'), nullable=False)
-    updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
-    updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
-
-    def __repr__(self):
-        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
-
-
-class Hospitals(Database.base):
-    __tablename__ = 'Hospitals'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
-
-    def __repr__(self):
-        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
-
-
-class UsersHospitals(Database.base):
-    __tablename__ = 'UsersHospitals'
-
-    user_id = Column(ForeignKey('Users.id'), primary_key=True)
-    hospital_id = Column(ForeignKey('Hospitals.id'), primary_key=True)
-
-    def __repr__(self):
-        return "{}: [user_id='{}', hospital_id='{}', ...]".format(self.__tablename__, self.user_id, self.hospital_id)
-
-
-class Operations(Database.base):
-    __tablename__ = 'Operations'
-
-    id = Column('id', Integer(), primary_key=True, autoincrement=True)
-    short_name = Column('short_name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
-    relationship('Surgery', backref=__tablename__)
-
-    def __repr__(self):
-        return "{}: [id='{}', short_name='{}', ...]".format(self.__tablename__, self.id, self.short_name)
+    def from_dict(self, d):
+        for k, v in d.items():
+            setattr(self, k, v)
 
 
 class Cepod(enum.Enum):
@@ -122,7 +55,94 @@ class Type(enum.Enum):
     NA = 3
 
 
-class Surgery(Database.base):
+#
+# This is necessary so that the Custom JSONEncoder/Decoder in restful.py can know which enums to
+# encode or decode.
+#
+KNOWN_ENUMS = {
+    'Cepod': Cepod,
+    'Side': Side,
+    'Type': Type
+}
+
+
+class UserType(Database.base, ExtendedBase):
+    __tablename__ = 'UserTypes'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+
+    def __repr__(self):
+        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
+
+
+class User(Database.base, ExtendedBase):
+    __tablename__ = 'Users'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+
+    type_id = Column(ForeignKey('UserTypes.id'))
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+
+    def __repr__(self):
+        return "{}: [id='{}', type='{}', name='{}', ...]".format(self.__tablename__, self.id, self.type, self.name)
+
+
+class Patient(Database.base, ExtendedBase):
+    __tablename__ = 'Patients'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    gender = Column(String(1), nullable=False)
+    age = Column(Integer(), nullable=True)
+    phone1 = Column(String(20), nullable=True)
+    phone2 = Column(String(20), nullable=True)
+    email = Column(String(SHORT_TEXT_LENGTH), nullable=True)
+    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
+    created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
+    created_by = Column('created_by', ForeignKey('Users.id'), nullable=False)
+    updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
+    updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
+
+    def __repr__(self):
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
+
+
+class Hospital(Database.base, ExtendedBase):
+    __tablename__ = 'Hospitals'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
+
+    def __repr__(self):
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
+
+
+class UsersHospital(Database.base, ExtendedBase):
+    __tablename__ = 'UsersHospitals'
+
+    user_id = Column(ForeignKey('Users.id'), primary_key=True)
+    hospital_id = Column(ForeignKey('Hospitals.id'), primary_key=True)
+
+    def __repr__(self):
+        return "{}: [user_id='{}', hospital_id='{}', ...]".format(self.__tablename__, self.user_id, self.hospital_id)
+
+
+class Operation(Database.base, ExtendedBase):
+    __tablename__ = 'Operations'
+
+    id = Column('id', Integer(), primary_key=True, autoincrement=True)
+    short_name = Column('short_name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
+    relationship('Surgery', backref=__tablename__)
+
+    def __repr__(self):
+        return "{}: [id='{}', short_name='{}', ...]".format(self.__tablename__, self.id, self.short_name)
+
+
+class Surgery(Database.base, ExtendedBase):
     __tablename__ = 'Surgery'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -131,10 +151,10 @@ class Surgery(Database.base):
     date_of_dc = Column(Date, nullable=False)
 
     operation_id = Column(Integer, ForeignKey('Operations.id'), nullable=False)
-    operation = relationship(Operations)
+    operation = relationship(Operation)
 
     hospital_id = Column(ForeignKey('Hospitals.id'), nullable=False)
-    hospital = relationship(Hospitals)
+    hospital = relationship(Hospital)
 
     side = Column(Enum(Side), nullable=False)
     primary = Column(Boolean, nullable=False, default=True)
@@ -152,7 +172,7 @@ class Surgery(Database.base):
         return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
 
 
-class MeshHerniaSurgery(Database.base):
+class MeshHerniaSurgery(Database.base, ExtendedBase):
     __tablename__ = 'MeshHerniaSurgery'
 
     id = Column(ForeignKey('Surgery.id'), nullable=False, primary_key=True)
@@ -162,7 +182,7 @@ class MeshHerniaSurgery(Database.base):
         return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
 
 
-class SurgeryUsers(Database.base):
+class SurgeryUser(Database.base, ExtendedBase):
     __tablename__ = 'SurgeryUsers'
 
     user_id = Column(ForeignKey('Users.id'), primary_key=True)

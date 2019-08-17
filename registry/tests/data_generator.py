@@ -2,7 +2,7 @@ import random
 from datetime import timedelta, date
 from typing import List
 
-from registry.schema import UserType, User, Patient, Hospitals, Operations, Surgery, Side, Type, Cepod
+from registry.schema import UserType, User, Patient, Hospital, Operation, Surgery, Side, Type, Cepod
 from registry.tests import names
 
 
@@ -68,20 +68,20 @@ def _patients(num: int) -> List[Patient]:
     return patients
 
 
-def _hospitals() -> List[Hospitals]:
+def _hospitals() -> List[Hospital]:
     hospitals = []
     for city in names.cities:
         name = names.hospital(city)
         address = name + '\n' + city
-        hospitals.append(Hospitals(name=name, address=address))
+        hospitals.append(Hospital(name=name, address=address))
 
     return hospitals
 
 
-def _operations() -> List[Operations]:
+def _operations() -> List[Operation]:
     operations = []
     for operation in names.operations:
-        operations.append(Operations(short_name=operation, long_name='long name for {}'.format(operation)))
+        operations.append(Operation(short_name=operation, long_name='long name for {}'.format(operation)))
 
     return operations
 
@@ -93,8 +93,8 @@ def _surgeries(session, num: int):
         los = random.randint(2, 10)
         date_of_surgery = _date_of_surgery(los)
         date_of_dc = _date_of_dc(date_of_surgery, los)
-        operation = random.choice(session.query(Operations).all())
-        hospital = random.choice(session.query(Hospitals).all())
+        operation = random.choice(session.query(Operation).all())
+        hospital = random.choice(session.query(Hospital).all())
         side = random.choice(list(Side))
         primary = random.choice([True, False])
         surgery_type = random.choice(list(Type))
