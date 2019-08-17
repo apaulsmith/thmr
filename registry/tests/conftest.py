@@ -8,7 +8,7 @@ from registry.tests import data_generator
 @pytest.fixture(scope="function")
 def database_session():
     db = Database(thmr_config.DB_TEST_URL)
-    db.create_schema()
+    db.create_all()
     session = db.create_session()
 
     with session.begin_nested():

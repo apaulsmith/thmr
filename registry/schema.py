@@ -17,7 +17,7 @@ class Database:
         self.engine = sqlalchemy.create_engine(db_url, echo=True)
         self.session = sessionmaker(bind=self.engine, autocommit=False)
 
-    def create_schema(self):
+    def create_all(self):
         return Database.base.metadata.create_all(self.engine)
 
     def drop_all(self):
