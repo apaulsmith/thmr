@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block head %}
 <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
-<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
+<link href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css" rel="stylesheet">
+<link href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css" rel="stylesheet">
 {% endblock %}
 {% block title %}Registry Editor{% endblock %}
 {% block body %}
-<script type="text/javascript" charset="utf-8">
+<script charset="utf-8" type="text/javascript">
 function load_registry()
 {
 	data = []
@@ -16,6 +16,8 @@ function load_registry()
 
 	return data
 }
+
+
 
 </script>
 <div>

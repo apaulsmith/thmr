@@ -94,6 +94,14 @@ cities = [
     'Kingston upon Hull'
 ]
 
+operations = [
+    'hernia repair',
+    'hip replacement',
+    'knee replacement',
+    'gall bladder removal',
+    'tonsillectomy'
+]
+
 
 def name(gender: str) -> str:
     if gender == 'M':
@@ -118,3 +126,7 @@ def address() -> str:
         random.choice(streetnames),
         random.choice(cities)
     )
+
+
+def hospital(city: str) -> str:
+    return '{} Hospital'.format(city)

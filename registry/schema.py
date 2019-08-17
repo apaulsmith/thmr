@@ -1,7 +1,8 @@
-from datetime import datetime, date
+import enum
+from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
@@ -30,7 +31,6 @@ class UserType(Database.base):
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    users = relationship('Users', back_populates=__tablename__)
 
     def __repr__(self):
         return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
@@ -42,8 +42,6 @@ class User(Database.base):
     id = Column(Integer(), primary_key=True, autoincrement=True)
 
     type_id = Column(ForeignKey('UserTypes.id'))
-    type = relationship('UserTypes', back_populates=__tablename__)
-
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
     email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
 
@@ -98,27 +96,51 @@ class Operations(Database.base):
     id = Column('id', Integer(), primary_key=True, autoincrement=True)
     short_name = Column('short_name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
     long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
+    relationship('Surgery', backref=__tablename__)
 
     def __repr__(self):
         return "{}: [id='{}', short_name='{}', ...]".format(self.__tablename__, self.id, self.short_name)
+
+
+class Cepod(enum.Enum):
+    Immediate = 1
+    Urgent = 2
+    Expedited = 3
+    Elective = 4
+
+
+class Side(enum.Enum):
+    Left = 1
+    Right = 2
+    NA = 3
+
+
+class Type(enum.Enum):
+    Direct = 1
+    Indirect = 2
+    NA = 3
 
 
 class Surgery(Database.base):
     __tablename__ = 'Surgery'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    cepod = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    cepod = Column(Enum(Cepod), nullable=False)
     date_of_surgery = Column(Date, nullable=False)
     date_of_dc = Column(Date, nullable=False)
-    los = Column(Integer, nullable=False)
-    operation = Column(ForeignKey('Operations.id'), nullable=False)
-    side = Column(String(5), nullable=False)
+
+    operation_id = Column(Integer, ForeignKey('Operations.id'), nullable=False)
+    operation = relationship(Operations)
+
+    hospital_id = Column(ForeignKey('Hospitals.id'), nullable=False)
+    hospital = relationship(Hospitals)
+
+    side = Column(Enum(Side), nullable=False)
     primary = Column(Boolean, nullable=False, default=True)
-    type = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    type = Column(Enum(Type), nullable=False)
     additional_procedure = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
     antibiotics = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
-    interval = Column(Integer, nullable=False, default=0)
-    opd_rv_date = Column(Date, nullable=False, default=date.today)
+    opd_rv_date = Column(Date, nullable=True)
     opd_pain = Column(String(SHORT_TEXT_LENGTH), nullable=False, default='none')
     opd_numbness = Column(String(SHORT_TEXT_LENGTH), nullable=False, default='none')
     opd_infection = Column(String(SHORT_TEXT_LENGTH), nullable=False, default='none')
@@ -127,6 +149,16 @@ class Surgery(Database.base):
 
     def __repr__(self):
         return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
+
+
+class MeshHerniaSurgery(Database.base):
+    __tablename__ = 'MeshHerniaSurgery'
+
+    id = Column(ForeignKey('Surgery.id'), nullable=False, primary_key=True)
+    type = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+
+    def __repr__(self):
+        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
 
 
 class SurgeryUsers(Database.base):
