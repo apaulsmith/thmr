@@ -80,10 +80,14 @@ class User(Database.base, ExtendedBase):
     __tablename__ = 'Users'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-
+    version_id = Column(Integer, nullable=False)
     type_id = Column(ForeignKey('UserTypes.id'))
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
     email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
 
     def __repr__(self):
         return "{}: [id='{}', type='{}', name='{}', ...]".format(self.__tablename__, self.id, self.type, self.name)
@@ -93,6 +97,7 @@ class Patient(Database.base, ExtendedBase):
     __tablename__ = 'Patients'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
     gender = Column(String(1), nullable=False)
     age = Column(Integer(), nullable=True)
@@ -105,6 +110,10 @@ class Patient(Database.base, ExtendedBase):
     updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
     updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
 
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
+
     def __repr__(self):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
@@ -113,8 +122,13 @@ class Hospital(Database.base, ExtendedBase):
     __tablename__ = 'Hospitals'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
     address = Column(String(LONG_TEXT_LENGTH), nullable=True)
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
 
     def __repr__(self):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
@@ -134,18 +148,25 @@ class Operation(Database.base, ExtendedBase):
     __tablename__ = 'Operations'
 
     id = Column('id', Integer(), primary_key=True, autoincrement=True)
-    short_name = Column('short_name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    version_id = Column(Integer, nullable=False)
+    name = Column('name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
     long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
     relationship('Surgery', backref=__tablename__)
 
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
+
     def __repr__(self):
-        return "{}: [id='{}', short_name='{}', ...]".format(self.__tablename__, self.id, self.short_name)
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
 class Surgery(Database.base, ExtendedBase):
     __tablename__ = 'Surgery'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
+
     cepod = Column(Enum(Cepod), nullable=False)
     date_of_surgery = Column(Date, nullable=False)
     date_of_dc = Column(Date, nullable=False)
@@ -168,6 +189,10 @@ class Surgery(Database.base, ExtendedBase):
     opd_comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
     comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
 
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
+
     def __repr__(self):
         return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
 
@@ -176,7 +201,12 @@ class MeshHerniaSurgery(Database.base, ExtendedBase):
     __tablename__ = 'MeshHerniaSurgery'
 
     id = Column(ForeignKey('Surgery.id'), nullable=False, primary_key=True)
+    version_id = Column(Integer, nullable=False)
     type = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
 
     def __repr__(self):
         return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)

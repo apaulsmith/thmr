@@ -1,3 +1,6 @@
+import logging
+
+
 class Dao:
     def __init__(self, session, entity):
         self.session = session
@@ -30,3 +33,19 @@ class Dao:
             raise ValueError('Found multiple entities for id {}!'.format(id))
 
         return items[0]
+
+    def apply_update(self, d: dict):
+        entity = self.find_id(d['id'])
+        for k, v in d.items():
+            if k not in ['id', 'version_id']:
+                setattr(entity, k, v)
+
+        return self.session.commit()
+
+    def add(self, entity):
+        self.session.add(entity)
+        self.session.commit()
+
+    def add_all(self, entities):
+        self.session.add_all(entities)
+        return self.session.commit()

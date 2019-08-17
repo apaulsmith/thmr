@@ -81,7 +81,7 @@ def _hospitals() -> List[Hospital]:
 def _operations() -> List[Operation]:
     operations = []
     for operation in names.operations:
-        operations.append(Operation(short_name=operation, long_name='long name for {}'.format(operation)))
+        operations.append(Operation(name=operation, long_name='long name for {}'.format(operation)))
 
     return operations
 
