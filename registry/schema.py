@@ -6,24 +6,25 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-import config
-
 SHORT_TEXT_LENGTH = 60
 LONG_TEXT_LENGTH = 240
 
 
 class Database:
-    engine = sqlalchemy.create_engine(config.DB_URL, echo=True)
-    session = sessionmaker(bind=engine, autocommit=False)
     base = declarative_base()
 
-    @staticmethod
-    def create_schema():
-        return Database.base.metadata.create_all(Database.engine)
+    def __init__(self, db_url):
+        self.engine = sqlalchemy.create_engine(db_url, echo=True)
+        self.session = sessionmaker(bind=self.engine, autocommit=False)
 
-    @staticmethod
-    def create_session():
-        return Database.session()
+    def create_schema(self):
+        return Database.base.metadata.create_all(self.engine)
+
+    def drop_all(self):
+        return Database.base.metadata.drop_all(self.engine)
+
+    def create_session(self):
+        return self.session()
 
 
 class UserType(Database.base):
