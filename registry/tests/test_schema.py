@@ -41,7 +41,7 @@ def test_data_generate():
 
     found_users = 0
     for user_type in session.query(UserType).all():
-        count = session.query(User).filter(User.type == user_type.id).count()
+        count = session.query(User).filter(User.type_id == user_type.id).count()
         assert count > 0
         found_users += count
 

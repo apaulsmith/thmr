@@ -3,7 +3,7 @@ from datetime import datetime, date
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 
 import config
 
@@ -30,6 +30,7 @@ class UserType(Database.base):
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
+    users = relationship('Users', back_populates=__tablename__)
 
     def __repr__(self):
         return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
@@ -39,7 +40,10 @@ class User(Database.base):
     __tablename__ = 'Users'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    type = Column(ForeignKey('UserTypes.id'))
+
+    type_id = Column(ForeignKey('UserTypes.id'))
+    type = relationship('UserTypes', back_populates=__tablename__)
+
     name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
     email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
 

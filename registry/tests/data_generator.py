@@ -36,7 +36,7 @@ def _users(user_type: UserType, num: int) -> List[User]:
         name = names.name(gender)
         email = names.email(name)
 
-        users.append(User(type=user_type.id, name=name, email=email))
+        users.append(User(type_id=user_type.id, name=name, email=email))
 
     return users
 
