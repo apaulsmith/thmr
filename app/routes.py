@@ -54,8 +54,7 @@ def patient_search():
                 Patient.name: form.name.data,
                 Patient.email: form.email.data,
                 Patient.gender: form.gender.data,
-                Patient.phone1: form.phone.data,
-                Patient.phone2: form.phone.data,
+                Patient.phone: form.phone.data,
                 Patient.address: form.address.data,
             })
 

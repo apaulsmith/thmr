@@ -1,4 +1,4 @@
-from app import app, login
+from app import login
 from app.session_wrapper import SessionGuard
 from registry.schema import User
 

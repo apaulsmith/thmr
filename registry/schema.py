@@ -6,7 +6,6 @@ from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 SHORT_TEXT_LENGTH = 60
@@ -58,6 +57,12 @@ class Type(enum.Enum):
     NA = 3
 
 
+class EpisodeType(enum.Enum):
+    Surgery = 1
+    FollowUp = 2
+    Other = 2
+
+
 #
 # This is necessary so that the Custom JSONEncoder/Decoder in restful.py can know which enums to
 # encode or decode.
@@ -65,67 +70,9 @@ class Type(enum.Enum):
 KNOWN_ENUMS = {
     'Cepod': Cepod,
     'Side': Side,
-    'Type': Type
+    'Type': Type,
+    'EpisodeType': EpisodeType,
 }
-
-
-class UserType(Database.base, ExtendedBase):
-    __tablename__ = 'UserTypes'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    type = Column(String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-
-    def __repr__(self):
-        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
-
-
-class User(Database.base, ExtendedBase, UserMixin):
-    __tablename__ = 'Users'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    version_id = Column(Integer, nullable=False)
-    type_id = Column(ForeignKey('UserTypes.id'))
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    password_hash = Column(String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    __mapper_args__ = {
-        "version_id_col": version_id
-    }
-
-    def __repr__(self):
-        return "{}: [id='{}', name='{}', email='{}'...]".format(self.__tablename__, self.id, self.name, self.email)
-
-
-class Patient(Database.base, ExtendedBase):
-    __tablename__ = 'Patients'
-
-    id = Column(Integer(), primary_key=True, autoincrement=True)
-    version_id = Column(Integer, nullable=False)
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    gender = Column(String(1), nullable=False)
-    age = Column(Integer(), nullable=True)
-    phone1 = Column(String(20), nullable=True)
-    phone2 = Column(String(20), nullable=True)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=True)
-    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
-    created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
-    created_by = Column('created_by', ForeignKey('Users.id'), nullable=False)
-    updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
-    updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
-
-    __mapper_args__ = {
-        "version_id_col": version_id
-    }
-
-    def __repr__(self):
-        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
 class Hospital(Database.base, ExtendedBase):
@@ -144,23 +91,95 @@ class Hospital(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-class UsersHospital(Database.base, ExtendedBase):
-    __tablename__ = 'UsersHospitals'
+class User(Database.base, ExtendedBase, UserMixin):
+    __tablename__ = 'Users'
 
-    user_id = Column(ForeignKey('Users.id'), primary_key=True)
-    hospital_id = Column(ForeignKey('Hospitals.id'), primary_key=True)
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    password_hash = Column(String(128), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
 
     def __repr__(self):
-        return "{}: [user_id='{}', hospital_id='{}', ...]".format(self.__tablename__, self.user_id, self.hospital_id)
+        return "{}: [id='{}', name='{}', email='{}'...]".format(self.__tablename__, self.id, self.name, self.email)
 
 
-class Operation(Database.base, ExtendedBase):
-    __tablename__ = 'Operations'
+class EpisodeAttendee(Database.base, ExtendedBase):
+    __tablename__ = 'EpisodeAttendees'
+
+    user_id = Column(ForeignKey('Users.id'), primary_key=True)
+    episode_id = Column(ForeignKey('Episodes.id'), primary_key=True)
+    comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
+
+    def __repr__(self):
+        return "{}: [user_id='{}', hospital_id='{}']".format(self.__tablename__, self.user_id, self.hospital_id)
+
+
+class Patient(Database.base, ExtendedBase):
+    __tablename__ = 'Patients'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
+    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    gender = Column(String(1), nullable=False)
+    birth_year = Column(Integer(), nullable=True)
+    phone = Column(String(20), nullable=True)
+    email = Column(String(SHORT_TEXT_LENGTH), nullable=True)
+    address = Column(String(LONG_TEXT_LENGTH), nullable=True)
+
+    hospital_id = Column(ForeignKey('Hospitals.id'), nullable=False)
+    hospital = relationship(Hospital)
+
+    created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
+    created_by = Column('created_by', ForeignKey('Users.id'), nullable=False)
+    updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
+    updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
+
+    def __repr__(self):
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
+
+
+class Complication(Database.base, ExtendedBase):
+    __tablename__ = 'Complications'
+
+    id = Column('id', Integer(), primary_key=True, autoincrement=True)
+    version_id = Column(Integer, nullable=False)
+
+    episode_id = Column(ForeignKey('Episodes.id'), nullable=False)
+
+    date = Column(Date, nullable=False, default=datetime.today())
+    comments = Column('comments', String(LONG_TEXT_LENGTH))
+
+    __mapper_args__ = {
+        "version_id_col": version_id
+    }
+
+    def __repr__(self):
+        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
+
+
+
+class Procedure(Database.base, ExtendedBase):
+    __tablename__ = 'Procedures'
 
     id = Column('id', Integer(), primary_key=True, autoincrement=True)
     version_id = Column(Integer, nullable=False)
     name = Column('name', String(SHORT_TEXT_LENGTH), nullable=False, unique=True)
-    long_name = Column('long_name', String(LONG_TEXT_LENGTH), nullable=True)
+
     relationship('Surgery', backref=__tablename__)
 
     __mapper_args__ = {
@@ -172,20 +191,18 @@ class Operation(Database.base, ExtendedBase):
 
 
 class Surgery(Database.base, ExtendedBase):
-    __tablename__ = 'Surgery'
+    __tablename__ = 'Surgeries'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     version_id = Column(Integer, nullable=False)
 
     cepod = Column(Enum(Cepod), nullable=False)
-    date_of_surgery = Column(Date, nullable=False)
-    date_of_dc = Column(Date, nullable=False)
+    date_of_discharge = Column(Date, nullable=True)
 
-    operation_id = Column(Integer, ForeignKey('Operations.id'), nullable=False)
-    operation = relationship(Operation)
+    procedure_id = Column(Integer, ForeignKey('Procedures.id'), nullable=False)
+    procedure = relationship(Procedure)
 
-    hospital_id = Column(ForeignKey('Hospitals.id'), nullable=False)
-    hospital = relationship(Hospital)
+    episode = relationship('Episode', uselist=False)
 
     side = Column(Enum(Side), nullable=False)
     primary = Column(Boolean, nullable=False, default=True)
@@ -207,26 +224,36 @@ class Surgery(Database.base, ExtendedBase):
         return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
 
 
-class MeshHerniaSurgery(Database.base, ExtendedBase):
-    __tablename__ = 'MeshHerniaSurgery'
+class Episode(Database.base, ExtendedBase):
+    __tablename__ = 'Episodes'
 
-    id = Column(ForeignKey('Surgery.id'), nullable=False, primary_key=True)
+    id = Column('id', Integer(), primary_key=True, autoincrement=True)
     version_id = Column(Integer, nullable=False)
-    type = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    episode_type = Column(Enum(EpisodeType), nullable=False)
+    date = Column(Date, nullable=False, default=datetime.today())
+
+    patient_id = Column(ForeignKey('Patients.id'), nullable=False)
+    patient = relationship(Patient)
+
+    hospital_id = Column(ForeignKey('Hospitals.id'), nullable=False)
+    hospital = relationship(Hospital)
+
+    attendees = relationship('EpisodeAttendee')
+
+    surgery_id = Column(ForeignKey('Surgeries.id'), nullable=True)
+    surgery = relationship(Surgery)
+
+    complications = relationship(Complication)
+
+    comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
 
     __mapper_args__ = {
         "version_id_col": version_id
     }
 
     def __repr__(self):
-        return "{}: [id='{}', type='{}']".format(self.__tablename__, self.id, self.type)
-
-
-class SurgeryUser(Database.base, ExtendedBase):
-    __tablename__ = 'SurgeryUsers'
-
-    user_id = Column(ForeignKey('Users.id'), primary_key=True)
-    hospital_id = Column(ForeignKey('Surgery.id'), primary_key=True)
-
-    def __repr__(self):
-        return "{}: [user_id='{}', hospital_id='{}']".format(self.__tablename__, self.user_id, self.hospital_id)
+        return "{}: [id='{}', date='{}', patient='{}', hospital='{}', ...]".format(self.__tablename__,
+                                                                                   self.id,
+                                                                                   self.date.isoformat(),
+                                                                                   self.patient_id,
+                                                                                   self.hospital_id)

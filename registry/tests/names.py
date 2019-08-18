@@ -94,7 +94,7 @@ cities = [
     'Kingston upon Hull'
 ]
 
-operations = [
+procedures = [
     'hernia repair',
     'hip replacement',
     'knee replacement',
@@ -110,6 +110,14 @@ def name(gender: str) -> str:
         return random.choice(surnames) + ', ' + random.choice(girls_names)
     else:
         raise ValueError('Unrecognised gender {}'.format(gender))
+
+
+def phone() -> str:
+    s = '+44 7'
+    for i in range(0, 8):
+        s += str(random.randint(0, 9))
+
+    return s
 
 
 def email(name: str) -> str:

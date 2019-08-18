@@ -4,8 +4,7 @@ import flask
 
 import config as thmr_config
 from app import app
-from app.restful import CustomJSONEncoder, CustomJSONDecoder
-from config import Config
+from app.restful import CustomJSONEncoder
 from registry.schema import Database
 from registry.tests import data_generator
 
@@ -33,8 +32,7 @@ if __name__ == '__main__':
         with session.begin_nested():
             data_generator.create_sample_data(session,
                                               num_users=thmr_config.Config.TEST_NUM_USERS,
-                                              num_patients=thmr_config.Config.TEST_NUM_PATIENTS,
-                                              num_surgeries=thmr_config.Config.TEST_NUM_SURGERIES)
+                                              num_patients=thmr_config.Config.TEST_NUM_PATIENTS)
         session.close()
 
     if args.flask:

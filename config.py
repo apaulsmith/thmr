@@ -11,7 +11,6 @@ class Config(object):
     # Test-case configuration
     TEST_NUM_USERS = 12
     TEST_NUM_PATIENTS = 50
-    TEST_NUM_SURGERIES = 50
 
     # Enable Flask's debugging features. Should be False in production
     DEBUG = True

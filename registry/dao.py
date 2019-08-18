@@ -1,6 +1,3 @@
-import logging
-
-
 class Dao:
     def __init__(self, session, entity):
         self.session = session

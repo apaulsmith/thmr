@@ -2,13 +2,11 @@ import pytest
 
 from app import restful
 from registry.dao import Dao
-from registry.schema import Hospital
 
-entities_to_test = ['UserType',
-                    'User',
+entities_to_test = ['User',
                     'Patient',
                     'Hospital',
-                    'Operation',
+                    'Episode',
                     'Surgery']
 
 
@@ -24,7 +22,7 @@ def test_find(database_session, entity_name):
         new_item.from_dict(restful.json_loads(restful.json_dumps(item.as_dict())))
         assert new_item.as_dict() == item.as_dict()
 
-@pytest.mark.parametrize('entity_name', ['User', 'Patient', 'Hospital', 'Operation'])
+@pytest.mark.parametrize('entity_name', ['User', 'Patient', 'Hospital'])
 def test_apply_update(database_session, entity_name):
     dao = Dao.find_dao(database_session, entity_name)
     d = dao.find_id(1).as_dict()

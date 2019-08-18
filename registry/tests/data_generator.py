@@ -2,67 +2,93 @@ import random
 from datetime import timedelta, date
 from typing import List
 
-from registry.schema import UserType, User, Patient, Hospital, Operation, Surgery, Side, Type, Cepod
+from registry.schema import User, Patient, Hospital, Surgery, Side, Type, Cepod, Episode, EpisodeType, \
+    Procedure, Complication, EpisodeAttendee
 from registry.tests import names
 
 
-def create_sample_data(session, num_users: int, num_patients: int, num_surgeries: int):
-    session.add_all(_user_types(session))
+def create_sample_data(session, num_users: int, num_patients: int):
+    users = _users(num_users)
+    session.add_all(users)
+    hospitals = _hospitals()
+    session.add_all(hospitals)
+    patients = _patients(num_patients, hospitals)
+    session.add_all(patients)
+    session.add_all(_procedures())
 
-    user_type_count = session.query(UserType).count()
-    for user_type in session.query(UserType).all():
-        session.add_all(_users(user_type, int(num_users / user_type_count)))
+    for patient in patients:
+        procedure = random.choice(session.query(Procedure).all())
 
-    session.add_all(_patients(num_patients))
-    session.add_all(_hospitals())
-    session.add_all(_operations())
+        attendees = set()
+        for i in range(0, random.randint(1, 5)):
+            attendees.add(random.choice(users))
 
-    session.add_all(_surgeries(session, num_surgeries))
-
-
-def _user_types(session):
-    user_types = []
-    if session.query(UserType).filter_by(type='Surgeon').count() == 0:
-        user_types.append(UserType(type='Surgeon'))
-
-    if session.query(UserType).filter_by(type='Nurse').count() == 0:
-        user_types.append(UserType(type='Nurse'))
-
-    if session.query(UserType).filter_by(type='Patient').count() == 0:
-        user_types.append(UserType(type='Patient'))
-
-    return user_types
+        session.add(_episode(patient, procedure, attendees))
 
 
-def _users(user_type: UserType, num: int) -> List[User]:
+def _procedures():
+    return [Procedure(name='Mesh Hernia')]
+
+
+def _episode(patient, procedure, users):
+    episode_type = random.choice(list(EpisodeType))
+    d = _date_of_surgery(1)
+
+    if episode_type == EpisodeType.Surgery:
+        surgery = _surgery(procedure)
+    else:
+        surgery = None
+
+    e = Episode(
+        episode_type=episode_type,
+        date=d,
+        patient=patient,
+        hospital=patient.hospital,
+        surgery=surgery,
+        complications=[Complication(date=d, comments="It's complicated...")],
+    )
+
+    attendees = []
+    for user in users:
+        attendees.append(EpisodeAttendee(
+            user_id=user.id,
+            episode_id=e.id
+        ))
+    e.attendees = attendees
+
+    return e
+
+
+def _users(num: int) -> List[User]:
     users = []
     for i in range(0, num):
         gender = random.choice(['M', 'F'])
         name = names.name(gender)
         email = names.email(name)
 
-        u = User(type_id=user_type.id, name=name, email=email)
+        u = User(name=name, email=email)
         u.set_password('password')
 
         users.append(u)
 
     return users
 
-def _patients(num: int) -> List[Patient]:
+
+def _patients(num: int, hospitals: List[Hospital]) -> List[Patient]:
     patients = []
     for i in range(0, num):
         gender = random.choice(['M', 'F'])
         name = names.name(gender)
-        age = random.randint(18, 90)
         email = names.email(name)
-        address = names.address()
 
         patients.append(Patient(
             name=name,
             gender=gender,
-            age=age,
+            birth_year=date.today().year - random.randint(18, 90),
             email=email,
-            address=address,
+            address=names.address(),
+            phone=names.phone(),
+            hospital=random.choice(hospitals),
             created_by=1,
             updated_by=1,
         ))
@@ -80,54 +106,38 @@ def _hospitals() -> List[Hospital]:
     return hospitals
 
 
-def _operations() -> List[Operation]:
-    operations = []
-    for operation in names.operations:
-        operations.append(Operation(name=operation, long_name='long name for {}'.format(operation)))
+def _surgery(procedure):
+    cepod = random.choice(list(Cepod))
+    los = random.randint(2, 10)
+    date_of_surgery = _date_of_surgery(los)
+    date_of_discharge = _date_of_dc(date_of_surgery, los)
+    side = random.choice(list(Side))
+    primary = random.choice([True, False])
+    surgery_type = random.choice(list(Type))
+    opd_rv_date = date_of_surgery + timedelta(days=31)
+    opd_pain = random.choice(['Yes', 'No'])
+    opd_numbness = random.choice(['Yes', 'No'])
+    opd_infection = random.choice(['Yes', 'No'])
+    opd_comments = random.choice(['All well', 'Terrible'])
+    comments = 'sample data set'
 
-    return operations
-
-
-def _surgeries(session, num: int):
-    surgeries = []
-    for i in range(0, num):
-        cepod = random.choice(list(Cepod))
-        los = random.randint(2, 10)
-        date_of_surgery = _date_of_surgery(los)
-        date_of_dc = _date_of_dc(date_of_surgery, los)
-        operation = random.choice(session.query(Operation).all())
-        hospital = random.choice(session.query(Hospital).all())
-        side = random.choice(list(Side))
-        primary = random.choice([True, False])
-        surgery_type = random.choice(list(Type))
-        opd_rv_date = date_of_surgery + timedelta(days=31)
-        opd_pain = random.choice(['Yes', 'No'])
-        opd_numbness = random.choice(['Yes', 'No'])
-        opd_infection = random.choice(['Yes', 'No'])
-        opd_comments = random.choice(['All well', 'Terrible'])
-        comments = 'sample data set'
-
-        surgeries.append(Surgery(
-            cepod=cepod,
-            date_of_surgery=date_of_surgery,
-            date_of_dc=date_of_dc,
-            operation=operation,
-            hospital=hospital,
-            side=side,
-            primary=primary,
-            type=surgery_type,
-            opd_rv_date=opd_rv_date,
-            opd_pain=opd_pain,
-            opd_numbness=opd_numbness,
-            opd_infection=opd_infection,
-            opd_comments=opd_comments,
-            comments=comments
-        ))
-
-    return surgeries
+    return Surgery(
+        cepod=cepod,
+        date_of_discharge=date_of_discharge,
+        side=side,
+        primary=primary,
+        type=surgery_type,
+        opd_rv_date=opd_rv_date,
+        opd_pain=opd_pain,
+        opd_numbness=opd_numbness,
+        opd_infection=opd_infection,
+        opd_comments=opd_comments,
+        comments=comments,
+        procedure=procedure
+    )
 
 
-def _date_of_surgery(los: int):
+def _date_of_surgery(los: int) -> date:
     return date.today() - timedelta(days=random.randint(los, 5 * 365))
 
 
