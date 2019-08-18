@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock %}
+{% block title %}Patient{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+        </div>
+        <div class="col-sm">
+            <h1>Patient Details</h1>
+            <hr/>
+            {% include 'forms/patient_form.html' %}
+            {% if episodes %}
+            <hr/>
+            <h2>Recorded Episodes</h2>
+            <div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Hospital</th>
+                        <th scope="col">Procedure</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for episode in episodes %}
+                    <tr>
+                        <th scope="row">{{ episode.date }}</th>
+                        <td>{{ episode.episode_type.name }}</td>
+                        <td>{{ episode.hospital.name }}</td>
+                        {% if episode.surgery %}
+                            <td>{{ episode.surgery.procedure.name }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td><a href="{{ url_for('episode', id=episode.id) }}">View/Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tbody>
+                </table>
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="col-sm">
+        </div>
+{% endblock %}

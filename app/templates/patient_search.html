@@ -36,7 +36,7 @@
                         <td>{{ result.phone1 }}</td>
                         <td>{{ result.phone2 }}</td>
                         <td>{{ result.address }}</td>
-                        <td><a href="{{ url_for('patient_edit', id=result.id) }}">View/Edit</a></td>
+                        <td><a href="{{ url_for('patient', id=result.id) }}">View/Edit</a></td>
                     </tr>
                     {% endfor %}
                     <tbody>

@@ -3,11 +3,11 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, restful
-from app.forms import LoginForm, PatientSearchForm, PatientEditForm
+from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm
 from app.session_wrapper import SessionGuard
 from registry.dao import Dao
 from registry.filter import like_all
-from registry.schema import User, Patient
+from registry.schema import User, Patient, Episode
 
 
 @app.route('/thmr/ui/registry', methods=['GET'])
@@ -64,12 +64,13 @@ def patient_search():
     return render_template('patient_search.html', title='Patient Search', form=form)
 
 
-@app.route('/patient_edit/<int:id>', methods=['GET', 'POST'])
+@app.route('/patient/<int:id>', methods=['GET', 'POST'])
 @login_required
-def patient_edit(id):
-
+def patient(id):
     with SessionGuard() as guard:
         patient = guard.session.query(Patient).filter(Patient.id == id).first()
+        episodes = guard.session.query(Episode).filter(Episode.patient_id == patient.id).all()
+
         form = PatientEditForm(obj=patient)
         if form.validate_on_submit():
             patient.name = form.name.data
@@ -80,7 +81,27 @@ def patient_edit(id):
             guard.session.commit()
             flash('Patient details have been updated.')
 
-    return render_template('patient_edit.html', title='Patient Details', form=form)
+        return render_template('patient.html', title='Patient Details', form=form, episodes=episodes)
+
+
+@app.route('/episode/<int:id>', methods=['GET', 'POST'])
+@login_required
+def episode(id):
+    with SessionGuard() as guard:
+        episode = guard.session.query(Episode).filter(Episode.id == id).first()
+
+        form = EpisodeEditForm(obj=episode)
+        if form.validate_on_submit():
+            episode.episode_type = form.episode_type.data
+            episode.date = form.date.data
+            episode.patient_id = form.patient_id.data
+            episode.hospital_id = form.hospital_id.data
+            episode.surgery_id = form.surgery_id.data
+            episode.comments = form.comments.data
+            guard.session.commit()
+            flash('Episode details have been updated.')
+
+        return render_template('episode.html', title='Episode Details', form=form, episode=episode)
 
 
 @app.route('/logout')
