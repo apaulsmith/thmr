@@ -172,7 +172,6 @@ class Complication(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-
 class Procedure(Database.base, ExtendedBase):
     __tablename__ = 'Procedures'
 

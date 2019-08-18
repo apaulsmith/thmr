@@ -22,6 +22,7 @@ def test_find(database_session, entity_name):
         new_item.from_dict(restful.json_loads(restful.json_dumps(item.as_dict())))
         assert new_item.as_dict() == item.as_dict()
 
+
 @pytest.mark.parametrize('entity_name', ['User', 'Patient', 'Hospital'])
 def test_apply_update(database_session, entity_name):
     dao = Dao.find_dao(database_session, entity_name)

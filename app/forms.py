@@ -3,8 +3,6 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
     HiddenField
 from wtforms.validators import DataRequired
 
-from registry.schema import EpisodeType
-
 
 def choice_for_enum(enum):
     return [e.name for e in enum]

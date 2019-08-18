@@ -8,4 +8,3 @@ def like_all(d):
             filter.append(k.like('%' + str(v) + '%'))
 
     return and_(*filter)
-
