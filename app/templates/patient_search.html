@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock %}
+{% block title %}Patient{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+        </div>
+        <div class="col-sm">
+            <h1>Find a Patient</h1>
+            <hr/>
+            {% include 'forms/patient_form.html' %}
+            {% if results %}
+            <hr/>
+            <h2>Search Results</h2>
+            <div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Gender</th>
+                        <th scope="col">Phone 1</th>
+                        <th scope="col">Phone 2</th>
+                        <th scope="col">Address</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <th scope="row">{{ result.name }}</th>
+                        <td>{{ result.email }}</td>
+                        <td>{{ result.gender }}</td>
+                        <td>{{ result.phone1 }}</td>
+                        <td>{{ result.phone2 }}</td>
+                        <td>{{ result.address }}</td>
+                        <td><a href="{{ url_for('patient_edit', id=result.id) }}">View/Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-sm">
+        </div>
+{% endblock %}

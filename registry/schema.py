@@ -100,7 +100,7 @@ class User(Database.base, ExtendedBase, UserMixin):
     }
 
     def __repr__(self):
-        return "{}: [id='{}', type='{}', name='{}', ...]".format(self.__tablename__, self.id, self.type, self.name)
+        return "{}: [id='{}', name='{}', email='{}'...]".format(self.__tablename__, self.id, self.name, self.email)
 
 
 class Patient(Database.base, ExtendedBase):

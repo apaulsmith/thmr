@@ -3,9 +3,11 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, restful
-from app.forms import LoginForm
+from app.forms import LoginForm, PatientSearchForm, PatientEditForm
+from app.session_wrapper import SessionGuard
 from registry.dao import Dao
-from registry.schema import User
+from registry.filter import like_all
+from registry.schema import User, Patient
 
 
 @app.route('/thmr/ui/registry', methods=['GET'])
@@ -26,13 +28,13 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        session = app.database.create_session()
-        user = session.query(User).filter_by(email=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        flash('Login successful for {}'.format(form.username.data))
+        with SessionGuard() as guard:
+            user = guard.session.query(User).filter_by(email=form.username.data).first()
+            if user is None or not user.check_password(form.password.data):
+                flash('Invalid username or password')
+                return redirect(url_for('login'))
+            login_user(user, remember=form.remember_me.data)
+            flash('Login successful for {}'.format(form.username.data))
 
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -40,6 +42,46 @@ def login():
         return redirect(next_page)
 
     return render_template('login.html', title='Sign In', form=form)
+
+
+@app.route('/patient_search', methods=['GET', 'POST'])
+@login_required
+def patient_search():
+    form = PatientSearchForm()
+    if form.validate_on_submit():
+        with SessionGuard() as guard:
+            f = like_all({
+                Patient.name: form.name.data,
+                Patient.email: form.email.data,
+                Patient.gender: form.gender.data,
+                Patient.phone1: form.phone.data,
+                Patient.phone2: form.phone.data,
+                Patient.address: form.address.data,
+            })
+
+            patients = guard.session.query(Patient).filter(f).order_by(Patient.name).all()
+            return render_template('patient_search.html', title='Patient Search', form=form, results=patients)
+
+    return render_template('patient_search.html', title='Patient Search', form=form)
+
+
+@app.route('/patient_edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def patient_edit(id):
+
+    with SessionGuard() as guard:
+        patient = guard.session.query(Patient).filter(Patient.id == id).first()
+        form = PatientEditForm(obj=patient)
+        if form.validate_on_submit():
+            patient.name = form.name.data
+            patient.email = form.email.data
+            patient.gender = form.gender.data
+            patient.phone1 = form.phone.data
+            patient.address = form.address.data
+            guard.session.commit()
+            flash('Patient details have been updated.')
+
+    return render_template('patient_edit.html', title='Patient Details', form=form)
 
 
 @app.route('/logout')
