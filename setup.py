@@ -14,8 +14,9 @@ setup(name='thmr-web',
           'pytest',
           'pytest-mypy',
           'flask',
+          'flask-login',
           'sqlalchemy',
-          'flask_sqlalchemy',
-          'marshmallow'
+          'WTForms',
+          'flask-wtf',
       ],
       zip_safe=False)

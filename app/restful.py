@@ -7,12 +7,21 @@ from registry import schema
 
 
 def all_as_dict(iterable):
-    output_dict = {}
+    result = {}
     for i in iterable:
         d = one_as_dict(i)
-        output_dict[i.id] = d
+        result[i.id] = d
 
-    return output_dict
+    return result
+
+
+def all_as_list(iterable):
+    result = []
+    for i in iterable:
+        d = one_as_dict(i)
+        result.append(d)
+
+    return result
 
 
 def one_as_dict(item):

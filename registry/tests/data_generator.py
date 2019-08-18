@@ -41,10 +41,12 @@ def _users(user_type: UserType, num: int) -> List[User]:
         name = names.name(gender)
         email = names.email(name)
 
-        users.append(User(type_id=user_type.id, name=name, email=email))
+        u = User(type_id=user_type.id, name=name, email=email)
+        u.set_password('password')
+
+        users.append(u)
 
     return users
-
 
 def _patients(num: int) -> List[Patient]:
     patients = []
