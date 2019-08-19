@@ -80,7 +80,7 @@ def _users(num: int) -> List[User]:
         u = User(name=name, email=email)
         u.set_password('password')
         users.append(u)
-        
+
         existing_names.add(u.name)
 
     return users
