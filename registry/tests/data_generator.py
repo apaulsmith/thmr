@@ -68,7 +68,6 @@ def _users(num: int) -> List[User]:
     users.append(test_user)
 
     existing_names = set()
-
     for i in range(0, num - 1):
         gender = random.choice(['M', 'F'])
         name = names.name(gender)
@@ -80,8 +79,9 @@ def _users(num: int) -> List[User]:
 
         u = User(name=name, email=email)
         u.set_password('password')
-
         users.append(u)
+        
+        existing_names.add(u.name)
 
     return users
 

@@ -1,5 +1,3 @@
-import argparse
-
 import flask
 
 import config as thmr_config
@@ -16,14 +14,14 @@ if __name__ == '__main__':
     database.drop_all()
     database.create_all()
 
-    with SessionGuard as guard:
-        data_generator.create_sample_data(guard.session,
-                                              num_users=thmr_config.Config.TEST_NUM_USERS,
-                                              num_patients=thmr_config.Config.TEST_NUM_PATIENTS)
-
     with app.app_context():
         flask.current_app.database = database
         flask.current_app.json_encoder = CustomJSONEncoder
         # flask.current_app.json_decoder = CustomJSONDecoder
+
+    with SessionGuard() as guard:
+        data_generator.create_sample_data(guard.session,
+                                          num_users=thmr_config.Config.TEST_NUM_USERS,
+                                          num_patients=thmr_config.Config.TEST_NUM_PATIENTS)
 
     app.run(debug=True)
