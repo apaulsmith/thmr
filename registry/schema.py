@@ -96,8 +96,8 @@ class User(Database.base, ExtendedBase, UserMixin):
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     version_id = Column(Integer, nullable=False)
-    name = Column(String(SHORT_TEXT_LENGTH), nullable=False)
-    email = Column(String(SHORT_TEXT_LENGTH), nullable=False)
+    name = Column(String(SHORT_TEXT_LENGTH), unique=True, nullable=False)
+    email = Column(String(SHORT_TEXT_LENGTH), unique=True, nullable=False)
     password_hash = Column(String(128), nullable=False)
 
     def set_password(self, password):
@@ -118,6 +118,8 @@ class EpisodeAttendee(Database.base, ExtendedBase):
     __tablename__ = 'EpisodeAttendees'
 
     user_id = Column(ForeignKey('Users.id'), primary_key=True)
+    user = relationship(User)
+
     episode_id = Column(ForeignKey('Episodes.id'), primary_key=True)
     comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
 

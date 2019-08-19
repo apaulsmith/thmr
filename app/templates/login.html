@@ -5,12 +5,12 @@
         <div class="col-sm">
         </div>
         <div class="col-sm">
-            <h1>Sign In</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
             <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <p>
-                    {{ form.username.label }}<br/>
-                    {{ form.username(size=32) }}
+                    {{ form.username.label(class='col-form-label') }}<br/>
+                    {{ form.username(class='form-control',autofocus=true,required=true) }}
                     {% for error in form.username.errors %}
                     <div class="alert alert-danger" role="alert">
                         [{{ error }}]
@@ -18,8 +18,8 @@
                     {% endfor %}
                 </p>
                 <p>
-                    {{ form.password.label }}<br/>
-                    {{ form.password(size=32) }}
+                    {{ form.password.label(class='col-form-label') }}<br/>
+                    {{ form.password(class='form-control',required=true) }}
                     {% for error in form.username.errors %}
                     <div class="alert alert-danger" role="alert">
                         [{{ error }}]
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </p>
                 <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-                <p>{{ form.submit() }}</p>
+                <p>{{ form.submit(class='btn btn-lg btn-primary btn-block') }}</p>
             </form>
         </div>
         <div class="col-sm">

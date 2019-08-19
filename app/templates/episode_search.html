@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock %}
+{% block title %}Patient{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <h1>Find an Episode</h1>
+            <hr/>
+            <form action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.episode_type.label(class='col-form-label') }}<br/>
+                    {{ form.episode_type(class='form-control') }}
+                </div>
+                <div class="form-group">
+                    {{ form.date.label(class='col-form-label') }}<br/>
+                    {{ form.date(class='form-control') }}
+                    {% for error in form.date.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        [{{ error }}]
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.patient_id.label(class='col-form-label') }}<br/>
+                    {{ form.patient_id(class='form-control') }}
+                </div>
+                <div class="form-group">
+                    {{ form.hospital_id.label(class='col-form-label') }}<br/>
+                    {{ form.hospital_id(class='form-control') }}
+                </div>
+                <p>{{ form.submit(class='btn btn-primary') }}
+                <hr/>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg">
+            <h2>Search Results</h2>
+            <div>
+                {% if results %}
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Type</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Patient</th>
+                        <th scope="col">Hospital</th>
+                        <th scope="col">Surgery</th>
+                        <th scope="col">Comments</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td>{{ result.episode_type.name }}</td>
+                        <td>{{ result.date }}</td>
+                        <td>{{ result.patient.name }}</td>
+                        <td>{{ result.hospital.name }}</td>
+                        {% if result.surgery %}
+                        <td>{{ result.surgery.procedure.name }}</td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                        <td>{{ result.comments }}</td>
+                        <td><a href="{{ url_for('episode', id=result.id) }}">View/Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                    <tbody>
+                </table>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                No results found
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endblock %}

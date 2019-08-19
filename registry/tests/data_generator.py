@@ -61,9 +61,21 @@ def _episode(patient, procedure, users):
 
 def _users(num: int) -> List[User]:
     users = []
-    for i in range(0, num):
+
+    # Default test account so that we can always login!
+    test_user = User(name='Test, Account', email='thmr_test_account@example.com')
+    test_user.set_password('password')
+    users.append(test_user)
+
+    existing_names = set()
+
+    for i in range(0, num - 1):
         gender = random.choice(['M', 'F'])
         name = names.name(gender)
+
+        while name in existing_names:
+            name = names.name(gender)
+
         email = names.email(name)
 
         u = User(name=name, email=email)

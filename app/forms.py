@@ -1,19 +1,32 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField, DateField, \
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField, \
     HiddenField
+from wtforms.ext.dateutil.fields import DateField
 from wtforms.validators import DataRequired
 
+from registry.schema import EpisodeType
 
-def choice_for_enum(enum):
-    return [e.name for e in enum]
+
+def choice_for_enum(enum, include_blank=False):
+    l = [(e.value, e.name) for e in enum]
+    if include_blank:
+        l.insert(0, ('', '(Any)'))
+    return l
 
 
 def coerce_for_enum(enum):
     def coerce(name):
+        if name is None or str(name) == '':
+            return None
+
         if isinstance(name, enum):
             return name
         try:
-            return enum[name]
+            try:
+                id = int(name)
+                return enum(id)
+            except ValueError:
+                return enum[name]
         except KeyError:
             raise ValueError(name)
 
@@ -43,11 +56,23 @@ class PatientEditForm(PatientForm):
     submit = SubmitField('Save Changes')
 
 
-class EpisodeEditForm(FlaskForm):
-    episode_type = HiddenField('Episode Type')
+class EpisodeForm(FlaskForm):
     date = DateField('Date')
-    patient_id = HiddenField('Patient')
-    hospital_id = HiddenField('Hospital')
+    patient_id = SelectField('Patient')
+    hospital_id = SelectField('Hospital')
     surgery_id = HiddenField('Surgery')
     comments = TextAreaField('Comments')
+
+
+class EpisodeEditForm(EpisodeForm):
+    episode_type = SelectField('Episode Type',
+                               choices=choice_for_enum(EpisodeType, include_blank=False),
+                               coerce=coerce_for_enum(EpisodeType))
     submit = SubmitField('Save Changes')
+
+
+class EpisodeSearchForm(EpisodeForm):
+    episode_type = SelectField('Episode Type',
+                               choices=choice_for_enum(EpisodeType, include_blank=True),
+                               coerce=coerce_for_enum(EpisodeType))
+    submit = SubmitField('Search')

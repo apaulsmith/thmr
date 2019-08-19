@@ -1,13 +1,13 @@
-from setuptools import setup
+import setuptools
 
-setup(name='thmr-web',
-      version='0.1',
-      description='Tanzanian Hernia Mesh Registry',
-      url='https://www.thmr.org',
+setuptools.setup(name='thmr',
+      version='0.0.1',
+      description='Tanzania Hernia Mesh Registry',
+      url='https://github.com/apaulsmith/thmr',
       author='Paul Smith',
-      author_email='a.paul.smith@gmail.com',
-      license='MIT',
-      packages=['thmr-web'],
+      author_email='paul.smith@postily.co.uk',
+      license='GPLv3',
+      packages=setuptools.find_packages(),
       install_requires=[
           'setuptools',
           'python-dateutil',

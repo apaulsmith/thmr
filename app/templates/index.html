@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-sm">
-        </div>
-        <div class="col-sm">
-            <h1>Index Page</h1>
-        </div>
-        <div class="col-sm">
-        </div>
+    <div class="jumbotron" style="background-color:#f5f5f5">
+        <h1 class="display-4">Welcome to thmr!</h1>
+        <p class="lead">The Tanzania Mesh Hernia Repair Registry</p>
+        <hr class="my-4">
+        <!-- <p>Get started with one of the options below.</p> -->
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{{ url_for('patient_search') }}">Find a patient</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('episode_search') }}">Find an Episode</a>
+            <a class="btn btn-secondary btn-lg" href="{{ url_for('logout') }}">Logout</a>
+        </p>
     </div>
 </div>
 {% endblock %}

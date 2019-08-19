@@ -1,13 +1,14 @@
 from flask import jsonify, request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy import and_
 from werkzeug.urls import url_parse
 
 from app import app, restful
-from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm
+from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
 from app.session_wrapper import SessionGuard
 from registry.dao import Dao
 from registry.filter import like_all
-from registry.schema import User, Patient, Episode
+from registry.schema import User, Patient, Episode, Hospital
 
 
 @app.route('/thmr/ui/registry', methods=['GET'])
@@ -91,6 +92,11 @@ def episode(id):
         episode = guard.session.query(Episode).filter(Episode.id == id).first()
 
         form = EpisodeEditForm(obj=episode)
+        form.hospital_id.choices = [(h.id, h.name) for h in
+                                    guard.session.query(Hospital).order_by(Hospital.name).all()]
+        form.patient_id.choices = [(h.id, h.name) for h in
+                                   guard.session.query(Patient).order_by(Patient.name).all()]
+
         if form.validate_on_submit():
             episode.episode_type = form.episode_type.data
             episode.date = form.date.data
@@ -102,6 +108,33 @@ def episode(id):
             flash('Episode details have been updated.')
 
         return render_template('episode.html', title='Episode Details', form=form, episode=episode)
+
+
+@app.route('/episode_search', methods=['GET', 'POST'])
+@login_required
+def episode_search():
+    with SessionGuard() as guard:
+        form = EpisodeSearchForm()
+        form.hospital_id.choices = [('', '(Any)')] + [(h.id, h.name) for h in
+                                                      guard.session.query(Hospital).order_by(Hospital.name).all()]
+        form.patient_id.choices = [('', '(Any)')] + [(h.id, h.name) for h in
+                                                     guard.session.query(Patient).order_by(Patient.name).all()]
+
+        if form.is_submitted():
+            filter = []
+            if form.date.data:
+                filter.append(Episode.date == form.date.data)
+            if form.episode_type.data:
+                filter.append(Episode.episode_type == form.episode_type.data)
+            if form.hospital_id.data:
+                filter.append(Episode.hospital_id == form.hospital_id.data)
+            if form.patient_id.data:
+                filter.append(Episode.patient_id == form.patient_id.data)
+
+            episodes = guard.session.query(Episode).filter(and_(*filter)).order_by(Episode.date).all()
+            return render_template('episode_search.html', title='Episode Search', form=form, results=episodes)
+
+        return render_template('episode_search.html', title='Episode Search', form=form)
 
 
 @app.route('/logout')
