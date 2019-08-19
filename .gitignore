@@ -125,3 +125,8 @@ dmypy.json
 
 # Local SQLite files
 *.sqlite
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

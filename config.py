@@ -5,7 +5,9 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-    DB_URL = 'sqlite:///' + os.path.join(BASE_PATH, 'database', 'registry.sqlite')
+
+    # DB_URL = 'sqlite:///' + os.path.join(BASE_PATH, 'database', 'registry.sqlite')
+    DB_URL = 'mysql+pymysql://thmr:39rq6E2HaG3W7n6QJ48B@thmr-test-ldn.cluster-cjtuf2egyhbw.eu-west-2.rds.amazonaws.com:3306'
     DB_TEST_URL = 'sqlite:///:memory:'
 
     # Test-case configuration
