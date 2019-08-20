@@ -43,4 +43,3 @@ login.login_view = 'login'
 db = SQLAlchemy(app=application)
 
 import app.routes
-app.routes.log_routes()
