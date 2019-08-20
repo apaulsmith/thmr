@@ -1,5 +1,3 @@
-import logging
-
 from flask import jsonify, request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import and_
@@ -10,10 +8,6 @@ from application import application, db, login
 from registry.dao import Dao
 from registry.filter import like_all
 from registry.schema import User, Patient, Episode, Hospital
-
-
-def log_routes():
-    logging.info('Imported routes')
 
 
 @login.user_loader
