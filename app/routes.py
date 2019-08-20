@@ -5,8 +5,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import and_
 from werkzeug.urls import url_parse
 
-from application import application, db, login
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
+from application import application, db, login
 from registry.dao import Dao
 from registry.filter import like_all
 from registry.schema import User, Patient, Episode, Hospital
@@ -14,6 +14,7 @@ from registry.schema import User, Patient, Episode, Hospital
 
 def log_routes():
     logging.info('Imported routes')
+
 
 @login.user_loader
 def load_user(user_id):
