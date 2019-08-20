@@ -1,32 +1,33 @@
 import enum
 from datetime import datetime
 
-import sqlalchemy
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Enum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from application import db
 
 SHORT_TEXT_LENGTH = 60
 LONG_TEXT_LENGTH = 240
 
-
-class Database:
-    base = declarative_base()
-
-    def __init__(self, db_url):
-        self.engine = sqlalchemy.create_engine(db_url, echo=True)
-        self.session = sessionmaker(bind=self.engine, autocommit=False)
-
-    def create_all(self):
-        return Database.base.metadata.create_all(self.engine)
-
-    def drop_all(self):
-        return Database.base.metadata.drop_all(self.engine)
-
-    def create_session(self):
-        return self.session()
+#
+# class Database:
+#     base = declarative_base(bind=db)
+#
+#     def __init__(self, db_url):
+#         self.engine = sqlalchemy.create_engine(db_url, echo=True)
+#         self.session = sessionmaker(bind=self.engine, autocommit=False)
+#
+#     def create_all(self):
+#         return Database.base.metadata.create_all(self.engine)
+#
+#     def drop_all(self):
+#         return Database.base.metadata.drop_all(self.engine)
+#
+#     def create_session(self):
+#         return self.session()
 
 
 class ExtendedBase:
@@ -75,7 +76,7 @@ KNOWN_ENUMS = {
 }
 
 
-class Hospital(Database.base, ExtendedBase):
+class Hospital(db.Model, ExtendedBase):
     __tablename__ = 'Hospitals'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -91,7 +92,7 @@ class Hospital(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-class User(Database.base, ExtendedBase, UserMixin):
+class User(db.Model, ExtendedBase, UserMixin):
     __tablename__ = 'Users'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -114,7 +115,7 @@ class User(Database.base, ExtendedBase, UserMixin):
         return "{}: [id='{}', name='{}', email='{}'...]".format(self.__tablename__, self.id, self.name, self.email)
 
 
-class EpisodeAttendee(Database.base, ExtendedBase):
+class EpisodeAttendee(db.Model, ExtendedBase):
     __tablename__ = 'EpisodeAttendees'
 
     user_id = Column(ForeignKey('Users.id'), primary_key=True)
@@ -127,7 +128,7 @@ class EpisodeAttendee(Database.base, ExtendedBase):
         return "{}: [user_id='{}', hospital_id='{}']".format(self.__tablename__, self.user_id, self.hospital_id)
 
 
-class Patient(Database.base, ExtendedBase):
+class Patient(db.Model, ExtendedBase):
     __tablename__ = 'Patients'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -155,7 +156,7 @@ class Patient(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-class Complication(Database.base, ExtendedBase):
+class Complication(db.Model, ExtendedBase):
     __tablename__ = 'Complications'
 
     id = Column('id', Integer(), primary_key=True, autoincrement=True)
@@ -174,7 +175,7 @@ class Complication(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-class Procedure(Database.base, ExtendedBase):
+class Procedure(db.Model, ExtendedBase):
     __tablename__ = 'Procedures'
 
     id = Column('id', Integer(), primary_key=True, autoincrement=True)
@@ -191,7 +192,7 @@ class Procedure(Database.base, ExtendedBase):
         return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
 
 
-class Surgery(Database.base, ExtendedBase):
+class Surgery(db.Model, ExtendedBase):
     __tablename__ = 'Surgeries'
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -225,7 +226,7 @@ class Surgery(Database.base, ExtendedBase):
         return "{}: [id='{}', ...]".format(self.__tablename__, self.id)
 
 
-class Episode(Database.base, ExtendedBase):
+class Episode(db.Model, ExtendedBase):
     __tablename__ = 'Episodes'
 
     id = Column('id', Integer(), primary_key=True, autoincrement=True)

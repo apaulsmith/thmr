@@ -1,26 +1,47 @@
-import flask
+import logging
+import os
 
-import config as thmr_config
-from app import app
-from app.restful import CustomJSONEncoder
-from app.session_wrapper import SessionGuard
-from registry.schema import Database
-from registry.tests import data_generator
+from flask import Flask
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
-config = thmr_config.Config()
-database = Database(config.DB_URL)
+logging.basicConfig(level=logging.INFO)
 
-database.drop_all()
-database.create_all()
+application = Flask(__name__)
 
-with app.app_context():
-    flask.current_app.database = database
-    flask.current_app.json_encoder = CustomJSONEncoder
-    # flask.current_app.json_decoder = CustomJSONDecoder
+# _application.json_encoder = CustomJSONEncoder
+# _application.json_decoder = CustomJSONDecoder
 
-with SessionGuard() as guard:
-    data_generator.create_sample_data(guard.session,
-                                      num_users=thmr_config.Config.TEST_NUM_USERS,
-                                      num_patients=thmr_config.Config.TEST_NUM_PATIENTS)
-application = app
-app.run(debug=True)
+if 'RDS_URL' in os.environ:
+    database_url = os.environ['RDS_URL']
+elif 'RDS_HOSTNAME' in os.environ:
+    DATABASE = {
+        'NAME': os.environ['RDS_DB_NAME'],
+        'USER': os.environ['RDS_USERNAME'],
+        'PASSWORD': os.environ['RDS_PASSWORD'],
+        'HOST': os.environ['RDS_HOSTNAME'],
+        'PORT': os.environ['RDS_PORT'],
+    }
+
+    database_url = ' mysql+mysqlconnector://%(USER)s:%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
+else:
+    BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+    database_url = 'sqlite:///:memory:'
+    # database_url = 'sqlite:///' + os.path.join(BASE_PATH, 'database', 'registry.sqlite')
+
+application.config.from_mapping(
+    SECRET_KEY=os.environ.get('SECRET_KEY') or 'you-will-never-guess',
+    SQLALCHEMY_DATABASE_URI=database_url,
+    SQLALCHEMY_POOL_RECYCLE=280,
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+)
+
+# Setup the login manager
+login = LoginManager(application)
+login.login_view = 'login'
+
+db = SQLAlchemy(app=application)
+
+from app import routes
+
+routes.log_routes()
