@@ -1,17 +1,20 @@
 import pytest
 
-from application import db
+from app import create_app
 from registry.tests import data_generator
 
 
 @pytest.fixture(scope="module")
 def database_session():
-    db.create_all()
-    data_generator.create_sample_data(db.session,
-                                      num_users=12,
-                                      num_patients=50)
+    application = create_app()
 
-    yield db.session
+    with application.app_context():
+        application.db.create_all()
+        data_generator.create_sample_data(application.db.session,
+                                          num_users=12,
+                                          num_patients=50)
 
-    db.session.close()
-    db.drop_all()
+        yield application.db.session
+
+        application.db.session.close()
+        application.db.drop_all()

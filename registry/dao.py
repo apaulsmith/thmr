@@ -5,7 +5,7 @@ class Dao:
 
     @staticmethod
     def find_entity_class(entity_name):
-        entity_class = getattr(__import__('registry.schema', fromlist=['schema']), entity_name)
+        entity_class = getattr(__import__('app.models', fromlist=['models']), entity_name)
         return entity_class
 
     @staticmethod

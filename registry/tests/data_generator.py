@@ -2,7 +2,7 @@ import random
 from datetime import timedelta, date
 from typing import List
 
-from registry.schema import User, Patient, Hospital, Surgery, Side, Type, Cepod, Episode, EpisodeType, \
+from app.models import User, Patient, Hospital, Surgery, Side, Type, Cepod, Episode, EpisodeType, \
     Procedure, Complication, EpisodeAttendee
 from registry.tests import names
 

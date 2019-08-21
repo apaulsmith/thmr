@@ -4,7 +4,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.ext.dateutil.fields import DateField
 from wtforms.validators import DataRequired
 
-from registry.schema import EpisodeType
+from app.models import EpisodeType
 
 
 def choice_for_enum(enum, include_blank=False):

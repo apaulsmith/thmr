@@ -1,9 +1,8 @@
 import datetime
+import enum
 import json
 import re
 import uuid
-
-from registry import schema
 
 
 def all_as_dict(iterable):
@@ -44,7 +43,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, uuid.UUID):
             return str(obj)
-        elif type(obj) in schema.KNOWN_ENUMS.values():
+        elif isinstance(obj, enum.Enum):
             return str(obj)
 
         return json.JSONEncoder.default(self, obj)

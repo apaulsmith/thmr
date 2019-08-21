@@ -1,6 +1,7 @@
 import argparse
 
-from application import application, db
+from app import db
+from wsgi import application
 from registry.tests import data_generator
 
 if __name__ == '__main__':

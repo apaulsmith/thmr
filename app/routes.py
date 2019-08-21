@@ -3,12 +3,13 @@ from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import and_
 from werkzeug.urls import url_parse
 
+from app import db, login
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
-from application import application, db, login
 from registry.dao import Dao
 from registry.filter import like_all
-from registry.schema import User, Patient, Episode, Hospital
+from app.models import User, Patient, Episode, Hospital
 
+from flask import current_app as application
 
 @login.user_loader
 def load_user(user_id):
@@ -146,7 +147,7 @@ def logout():
 
 @application.route('/thmr/data/<string:entity_name>', methods=['GET'])
 def get_entity(entity_name):
-    dao = Dao.find_dao(app.database.create_session(), entity_name)
+    dao = Dao.find_dao(application.database.create_session(), entity_name)
 
     if request.args.get('flat') is not None:
         return jsonify(restful.all_as_list(dao.find_all()))
@@ -156,13 +157,13 @@ def get_entity(entity_name):
 
 @application.route('/thmr/data/<string:entity_name>/<int:id>', methods=['GET'])
 def get_entity_by_id(entity_name, id):
-    dao = Dao(app.database.create_session(), entity_name)
+    dao = Dao(application.database.create_session(), entity_name)
     return jsonify(restful.one_as_dict(dao.find_id(id)))
 
 
 @application.route('/thmr/data/<string:entity_name>', methods=['POST'])
 def add_entity(entity_name):
-    dao = Dao.find_dao(app.database.create_session(), entity_name)
+    dao = Dao.find_dao(application.database.create_session(), entity_name)
     entity = dao.new(entity_name)
 
     d = restful.json_loads(request.json)
@@ -173,7 +174,7 @@ def add_entity(entity_name):
 
 @application.route('/thmr/data/<string:entity_name>/<int:id>', methods=['PUT'])
 def update_entity(entity_name, id):
-    dao = Dao.find_dao(app.database.create_session(), entity_name)
+    dao = Dao.find_dao(application.database.create_session(), entity_name)
     d = restful.json_loads(request.json)
 
     if 'id' in d.keys() and d['id'] != id:
