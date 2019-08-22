@@ -1,9 +1,8 @@
 import datetime
+import enum
 import json
 import re
 import uuid
-
-from registry import schema
 
 
 def all_as_dict(iterable):
@@ -44,7 +43,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, uuid.UUID):
             return str(obj)
-        elif type(obj) in schema.KNOWN_ENUMS.values():
+        elif isinstance(obj, enum.Enum):
             return str(obj)
 
         return json.JSONEncoder.default(self, obj)
@@ -52,8 +51,9 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 class CustomJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
-        json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
-        self.enum_regex = re.compile(r"^([a-zA-Z]+)\.([a-zA-Z]+)$")
+        json.JSONDecoder.__init__(self, object_hook=self.object_hook) #, *args, **kwargs)
+        self.enum_regex = re.compile(r"^([A-Z][a-zA-Z]*)\.([A-Z][a-zA-Z]*)$")
+        self.enum_module = 'app.models'
 
     def object_hook(self, source):
         for k, v in source.items():
@@ -81,9 +81,12 @@ class CustomJSONDecoder(json.JSONDecoder):
         if match:
             enum_name = match.group(1)
             enum_value = match.group(2)
-
-            e = schema.KNOWN_ENUMS.get(enum_name)
-            if e:
-                return e[enum_value]
+            return self.find_enum(self.enum_module, enum_name, enum_value)
 
         raise ValueError('{} is not a known enum value!'.format(v))
+
+    @staticmethod
+    def find_enum(module, enum_name, enum_value):
+        mod = __import__(module, fromlist=[enum_name])
+        klass = getattr(mod, enum_name)
+        return klass[enum_value]

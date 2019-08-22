@@ -1,5 +1,5 @@
 import config as thmr_config
-from registry.schema import User, Patient, Hospital, Surgery, Episode, EpisodeType
+from app.models import User, Patient, Hospital, Surgery, Episode, EpisodeType
 from registry.tests import names
 
 
