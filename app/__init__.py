@@ -26,7 +26,7 @@ def create_app():
             'PORT': os.environ['RDS_PORT'],
         }
 
-        database_url = ' mysql+mysqlconnector://%(USER)s:%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
+        database_url = 'mysql+mysqlconnector://%(USER)s:%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
     else:
         database_url = 'sqlite:///:memory:'
 

@@ -23,7 +23,7 @@ if __name__ == '__main__':
                 data_generator.create_sample_data(session,
                                                   num_users=12,
                                                   num_patients=50)
-        session.commit()
+            session.commit()
 
     if args.flask:
         application.run(debug=True)
