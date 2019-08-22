@@ -1,3 +1,4 @@
+from flask import current_app as application
 from flask import jsonify, request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import and_
@@ -5,11 +6,10 @@ from werkzeug.urls import url_parse
 
 from app import db, login
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
+from app.models import User, Patient, Episode, Hospital
 from registry.dao import Dao
 from registry.filter import like_all
-from app.models import User, Patient, Episode, Hospital
 
-from flask import current_app as application
 
 @login.user_loader
 def load_user(user_id):
@@ -20,6 +20,11 @@ def load_user(user_id):
 @application.route('/thmr/ui/registry', methods=['GET'])
 def ui_registry():
     return render_template("registry.html")
+
+
+@application.route('/', methods=['GET'])
+def root():
+    return redirect(url_for('index'))
 
 
 @application.route('/index', methods=['GET'])

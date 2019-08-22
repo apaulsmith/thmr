@@ -78,7 +78,7 @@ def _users(num: int) -> List[User]:
         email = names.email(name)
 
         u = User(name=name, email=email)
-        u.set_password('password')
+        u.set_password(name+email)
         users.append(u)
 
         existing_names.add(u.name)

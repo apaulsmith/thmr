@@ -15,6 +15,7 @@ if __name__ == '__main__':
     with application.app_context():
 
         if args.reset_db:
+            application.db.drop_all()
             application.db.create_all()
 
         if args.generate:
