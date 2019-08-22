@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 # Globally accessible libraries
-from app.restful import CustomJSONEncoder, CustomJSONDecoder
+# from app.restful import CustomJSONEncoder
 
 db = SQLAlchemy()
 login = LoginManager()
@@ -26,7 +26,7 @@ def create_app():
             'PORT': os.environ['RDS_PORT'],
         }
 
-        database_url = 'mysql+mysqlconnector://%(USER)s:%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
+        database_url = ' mysql+mysqlconnector://%(USER)s:%(PASSWORD)s@%(HOST)s:%(PORT)s/%(NAME)s' % DATABASE
     else:
         database_url = 'sqlite:///:memory:'
 
@@ -46,8 +46,7 @@ def create_app():
     login.login_view = 'login'
 
     # Set custom JSON Encode
-    # app.json_encoder = CustomJSONEncoder
-    # app.json_decoder = CustomJSONDecoder
+    # app.json_encoder = CustomJSONEncoder()
 
     with app.app_context():
         # Include our Routes

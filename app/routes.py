@@ -17,16 +17,6 @@ def load_user(user_id):
     return u
 
 
-@application.route('/thmr/ui/registry', methods=['GET'])
-def ui_registry():
-    return render_template("registry.html")
-
-
-@application.route('/', methods=['GET'])
-def root():
-    return redirect(url_for('index'))
-
-
 @application.route('/index', methods=['GET'])
 @login_required
 def index():
