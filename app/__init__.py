@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 # Globally accessible libraries
-from app.restful import CustomJSONEncoder
+from app.restful import CustomJSONEncoder, CustomJSONDecoder
 
 db = SQLAlchemy()
 login = LoginManager()
@@ -46,7 +46,8 @@ def create_app():
     login.login_view = 'login'
 
     # Set custom JSON Encode
-    # app.json_encoder = CustomJSONEncoder()
+    # app.json_encoder = CustomJSONEncoder
+    # app.json_decoder = CustomJSONDecoder
 
     with app.app_context():
         # Include our Routes

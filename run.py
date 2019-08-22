@@ -1,7 +1,6 @@
 import argparse
 
-from app import db
-from wsgi import application
+from app import create_app
 from registry.tests import data_generator
 
 if __name__ == '__main__':
@@ -12,14 +11,18 @@ if __name__ == '__main__':
     parser.add_argument('--flask', help='generate dummy test data', dest='flask', action='store_true', default=True)
     args = parser.parse_args()
 
-    if args.reset_db:
-        db.create_all()
+    application = create_app()
+    with application.app_context():
 
-    if args.generate:
-        session = db.session
-        data_generator.create_sample_data(session,
-                                          num_users=12,
-                                          num_patients=50)
+        if args.reset_db:
+            application.db.create_all()
+
+        if args.generate:
+            session = application.db.session
+            with session.begin_nested():
+                data_generator.create_sample_data(session,
+                                                  num_users=12,
+                                                  num_patients=50)
         session.commit()
 
     if args.flask:
