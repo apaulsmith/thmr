@@ -11,6 +11,7 @@ thmr is a Python 3 Flask application using SQLAlchemy for persistence. It is hos
 Clone the source code from GitHub	
 ~~~~
 $ git clone https://github.com/apaulsmith/thmr.git
+$ cd thmr
 ~~~~
 
 Install virtualenv, create a new environment, and install the required dependencies
