@@ -1,7 +1,7 @@
 import pytest
 
 from app import restful
-from registry.dao import Dao
+from app.dao.dao import Dao
 
 entities_to_test = ['User',
                     'Patient',

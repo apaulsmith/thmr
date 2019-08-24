@@ -4,6 +4,8 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
+from app.util import pwd_generator
+
 db = SQLAlchemy()
 login = LoginManager()
 
@@ -28,7 +30,7 @@ def create_app():
         database_url = 'sqlite:///:memory:'
 
     app.config.from_mapping(
-        SECRET_KEY=os.environ.get('SECRET_KEY') or 'you-will-never-guess',
+        SECRET_KEY=os.environ.get('SECRET_KEY') or pwd_generator.password(),
         SQLALCHEMY_DATABASE_URI=database_url,
         SQLALCHEMY_POOL_RECYCLE=280,
         SQLALCHEMY_TRACK_MODIFICATIONS=False

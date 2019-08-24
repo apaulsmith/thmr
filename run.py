@@ -1,7 +1,7 @@
 import argparse
 
 from app import create_app
-from registry.tests import data_generator
+from app.tests import data_generator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Tanzania Mesh Hernia Repository')

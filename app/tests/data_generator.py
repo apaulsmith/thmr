@@ -2,9 +2,10 @@ import random
 from datetime import timedelta, date
 from typing import List
 
+from app import pwd_generator
 from app.models import User, Patient, Hospital, Surgery, Side, Type, Cepod, Episode, EpisodeType, \
     Procedure, Complication, EpisodeAttendee
-from registry.tests import names
+from app.tests import names
 
 
 def create_sample_data(session, num_users: int, num_patients: int):
@@ -78,7 +79,7 @@ def _users(num: int) -> List[User]:
         email = names.email(name)
 
         u = User(name=name, email=email)
-        u.set_password(name+email)
+        u.set_password(pwd_generator.password())
         users.append(u)
 
         existing_names.add(u.name)

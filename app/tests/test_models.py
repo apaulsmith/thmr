@@ -1,12 +1,11 @@
-import config as thmr_config
 from app.models import User, Patient, Hospital, Surgery, Episode, EpisodeType
-from registry.tests import names
+from app.tests import names, conftest
 
 
 def test_data_generate(database_session):
     found_users = database_session.query(User).count()
-    assert found_users == thmr_config.Config.TEST_NUM_USERS
-    assert database_session.query(Patient).count() == thmr_config.Config.TEST_NUM_PATIENTS
+    assert found_users == conftest.TEST_NUM_USERS
+    assert database_session.query(Patient).count() == conftest.TEST_NUM_PATIENTS
 
     assert database_session.query(Hospital).count() == len(names.cities)
     assert database_session.query(Episode).count() > 0

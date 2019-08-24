@@ -7,8 +7,8 @@ from werkzeug.urls import url_parse
 from app import db, login
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
 from app.models import User, Patient, Episode, Hospital
-from registry.dao import Dao
-from registry.filter import like_all
+from app.dao.dao import Dao
+from app.util.filter import like_all
 
 
 @login.user_loader
