@@ -1,10 +1,34 @@
 # Tanzania Mesh Hernia Registry
 Tanzania Mesh Hernia Registry, thmr, is a mobile-first website and database designed to record and track Mesh Hernia operations in Tanzania. It was built by and for the SWIFTSS charity who are focused on improving the availability and effectiveness of mesh hernia surgery across Tanzania.
 
+The code is avaliable under a GPL v3 license on https://github.com/apaulsmith/thmr. Issues should be reported to https://github.com/apaulsmith/thmr/issues and project tracking can also be found at https://github.com/apaulsmith/thmr/projects/1.  
+
 ## Implementation
 thmr is a Python 3 Flask application using SQLAlchemy for persistence. It is hosted on AWS ElasticBeanstalk backed by an AWS RDS Aurora MySQL compatible database. Bootstrap is used as the front-end component library. The code is maintained in GitHub and licensed under GPL v3. VirtualEnv is used to maintain Python dependencies. PyTest is used as a unit testing framework.
 
-<< architecure diagram? >>
+## Getting and running the code
+
+Clone the source code from GitHub	
+~~~~
+$ git clone https://github.com/apaulsmith/thmr.git
+~~~~
+
+Install virtualenv, create a new environment, and install the required dependencies
+~~~
+# From inside the 'thmr' directory created by git clone
+$ pip install virtualenv
+$ virtualenv venv
+
+$ venv\Scripts\activate [Windows]
+$ source venv/bin/activate [Linux/Mac]
+
+$ pip install -r requirements.txt
+~~~
+
+Run thmr!
+~~~
+$ python run.py --help
+~~~
 
 ## Layout
 Thmr follows the standard layout for a Flask application.
