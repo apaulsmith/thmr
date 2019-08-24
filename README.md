@@ -1,7 +1,7 @@
 # Tanzania Mesh Hernia Registry
 Tanzania Mesh Hernia Registry, thmr, is a mobile-first website and database designed to record and track Mesh Hernia operations in Tanzania. It was built by and for the SWIFTSS charity who are focused on improving the availability and effectiveness of mesh hernia surgery across Tanzania.
 
-The code is avaliable under a GPL v3 license on https://github.com/apaulsmith/thmr. Issues should be reported to https://github.com/apaulsmith/thmr/issues and project tracking can also be found at https://github.com/apaulsmith/thmr/projects/1.  
+The code is available under a GPL v3 license on https://github.com/apaulsmith/thmr. Issues should be reported to https://github.com/apaulsmith/thmr/issues and project tracking can also be found at https://github.com/apaulsmith/thmr/projects/1.  
 
 ## Implementation
 thmr is a Python 3 Flask application using SQLAlchemy for persistence. It is hosted on AWS ElasticBeanstalk backed by an AWS RDS Aurora MySQL compatible database. Bootstrap is used as the front-end component library. The code is maintained in GitHub and licensed under GPL v3. VirtualEnv is used to maintain Python dependencies. PyTest is used as a unit testing framework.
@@ -48,8 +48,6 @@ Patients are designed with minimal assumptions on the uniqueness or structure of
 Episodes record any medical activity or medical event of a Patient. Each episode links together a Patient, on a date, at a Hospital with the list of attending health care staff and any Complications that were observed or occurred. Episodes have an episode type and each episode type can extend the attributes captured using an additional child table. Their are two primary Episode types modelled, Surgery and FollowUp. FollowUp records no additional fields whilst Surgery extends the Episode to capture which Procedure was performed and a number of operative and post-operative observations.
 
 The medical team are stored as users. Their is currently no separation between people who use the system and people who attend episodes and it is not necessary for a user to login to be captured or associated with an Episode.
-
-<< ER diagram >>
 
 ## Interface
 The interface is built around the actions of finding a patient, creating a new patient or finding an episode. Recording, viewing or editing an episode happens off these launch points.
