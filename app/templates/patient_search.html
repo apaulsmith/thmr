@@ -44,10 +44,20 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
-  $('#spinner').hide();
-});
+    $('#spinner').hide();
 
+    $.get("{{ url_for('typeahead_patients') }}", function(json_data){
+        $("#name").typeahead({
+            data: json_data,
+            hint: true,
+            highlight: true, /* Enable substring highlighting */
+            minLength: 1
+         });
+    },'json');
+});
 </script>
 {% endblock %}

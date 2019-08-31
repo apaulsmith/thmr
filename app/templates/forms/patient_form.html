@@ -2,7 +2,7 @@
     {{ form.hidden_tag() }}
     <div class="form-group">
         {{ form.name.label(class='col-form-label') }}<br/>
-        {{ form.name(class='form-control') }}
+        {{ form.name(class='form-control', autocomplete="off") }}
         {{ macros.with_errors(form.name) }}
 
     </div>
