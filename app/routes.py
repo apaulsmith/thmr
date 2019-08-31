@@ -199,6 +199,18 @@ def logout():
     return redirect(url_for('index'))
 
 
+@application.route('/health_check', methods=['GET'])
+def health_check():
+    if not application:
+        raise ValueError('No application running!')
+
+    if db.session.query(User).count() < 1:
+        raise ValueError('No users defined!')
+
+    # Return 204 No Content
+    return '', 204
+
+
 @application.route('/thmr/data/<string:entity_name>', methods=['GET'])
 def get_entity(entity_name):
     dao = Dao.find_dao(application.database.create_session(), entity_name)
