@@ -1,3 +1,4 @@
+import logging
 import random
 from datetime import timedelta, date
 from typing import List
@@ -12,6 +13,12 @@ TEST_ACCOUNT_PASSWORD = 'password'
 
 
 def create_sample_data(session, num_users: int, num_patients: int):
+    if session.query(User).filter(User.email == TEST_ACCOUNT_EMAIL).count() == 1:
+        logging.info('Data generator has already been run in this database so skipping.')
+        return
+    else:
+        logging.info('Running data generator.')
+
     users = _users(num_users)
     session.add_all(users)
     hospitals = _hospitals()

@@ -44,74 +44,75 @@
         {% endif %}
     </div>
     <p>
-        {{ form.surgery_id.label(class='col-form-label') }}<hr/>
-        {{ macros.with_errors(form.surgery_id) }}
-        {% if episode.surgery %}
-        <table class="table table-striped">
-            <tbody>
-            <tr>
-                <td>Cepod</td>
-                <td>{{ episode.surgery.cepod.name }}</td>
-            </tr>
-            <tr>
-                <td>Date of discharge</td>
-                <td>{{ episode.surgery.date_of_discharge }}</td>
-            </tr>
-            <tr>
-                <td>Procedure</td>
-                <td>{{ episode.surgery.procedure.name }}</td>
-            </tr>
-            <tr>
-                <td>Side</td>
-                <td>{{ episode.surgery.side.name }}</td>
-            </tr>
-            <tr>
-                <td>Primary</td>
-                <td>{{ episode.surgery.primary }}</td>
-            </tr>
-            <tr>
-                <td>Type</td>
-                <td>{{ episode.surgery.type.name }}</td>
-            </tr>
-            <tr>
-                <td>Additional Procedure</td>
-                <td>{{ episode.surgery.additional_procedure }}</td>
-            </tr>
+        {{ form.surgery_id.label(class='col-form-label') }}
+    <hr/>
+    {{ macros.with_errors(form.surgery_id) }}
+    {% if episode.surgery %}
+    <table class="table table-striped">
+        <tbody>
+        <tr>
+            <td>Cepod</td>
+            <td>{{ episode.surgery.cepod.name }}</td>
+        </tr>
+        <tr>
+            <td>Date of discharge</td>
+            <td>{{ episode.surgery.date_of_discharge }}</td>
+        </tr>
+        <tr>
+            <td>Procedure</td>
+            <td>{{ episode.surgery.procedure.name }}</td>
+        </tr>
+        <tr>
+            <td>Side</td>
+            <td>{{ episode.surgery.side.name }}</td>
+        </tr>
+        <tr>
+            <td>Primary</td>
+            <td>{{ episode.surgery.primary }}</td>
+        </tr>
+        <tr>
+            <td>Type</td>
+            <td>{{ episode.surgery.type.name }}</td>
+        </tr>
+        <tr>
+            <td>Additional Procedure</td>
+            <td>{{ episode.surgery.additional_procedure }}</td>
+        </tr>
 
-            <tr>
-                <td>Antibiotics</td>
-                <td>{{ episode.surgery.antibiotics }}</td>
-            </tr>
-            <tr>
-                <td>RV Date</td>
-                <td>{{ episode.surgery.opd_rv_date }}</td>
-            </tr>
-            <tr>
-                <td>OPD Pain</td>
-                <td>{{ episode.surgery.opd_pain }}</td>
-            </tr>
-            <tr>
-                <td>OPD Numbness</td>
-                <td>{{ episode.surgery.opd_numbness }}</td>
-            </tr>
-            <tr>
-                <td>OPD Infection</td>
-                <td>{{ episode.surgery.opd_infection }}</td>
-            </tr>
-            <tr>
-                <td>OPD Comments</td>
-                <td>{{ episode.surgery.opd_comments }}</td>
-            </tr>
-            <tr>
-                <td>General Comments</td>
-                <td>{{ episode.surgery.comments }}</td>
-            </tr>
-            <tbody>
-        </table>
-        {% else %}
-        <input class="form-control" type="text" placeholder="" readonly>
-        {% endif %}
-        {{ form.surgery_id(class='form-control') }}
+        <tr>
+            <td>Antibiotics</td>
+            <td>{{ episode.surgery.antibiotics }}</td>
+        </tr>
+        <tr>
+            <td>RV Date</td>
+            <td>{{ episode.surgery.opd_rv_date }}</td>
+        </tr>
+        <tr>
+            <td>OPD Pain</td>
+            <td>{{ episode.surgery.opd_pain }}</td>
+        </tr>
+        <tr>
+            <td>OPD Numbness</td>
+            <td>{{ episode.surgery.opd_numbness }}</td>
+        </tr>
+        <tr>
+            <td>OPD Infection</td>
+            <td>{{ episode.surgery.opd_infection }}</td>
+        </tr>
+        <tr>
+            <td>OPD Comments</td>
+            <td>{{ episode.surgery.opd_comments }}</td>
+        </tr>
+        <tr>
+            <td>General Comments</td>
+            <td>{{ episode.surgery.comments }}</td>
+        </tr>
+        <tbody>
+    </table>
+    {% else %}
+    <input class="form-control" type="text" placeholder="" readonly>
+    {% endif %}
+    {{ form.surgery_id(class='form-control') }}
     </p>
     <div>
         <label class="col-form-label">Complications</label><br/>
@@ -146,3 +147,10 @@
         <a href="{{ url_for('patient_search') }}" class="btn btn-secondary">Cancel</a>
     </p>
 </form>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  $('#date').datepicker({
+    format: "yyyy-mm-dd"
+  });
+});
+</script>
