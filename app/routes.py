@@ -28,6 +28,11 @@ def root():
     return redirect(url_for('index'))
 
 
+@application.route('/not_implemented', methods=['GET'])
+def not_implemented():
+    return render_template('not_implemented.html', title='Ooops')
+
+
 @application.route('/index', methods=['GET'])
 @login_required
 def index():
@@ -190,6 +195,18 @@ def episode_search():
         return render_template('episode_search.html', title='Episode Search', form=form, results=episodes)
 
     return render_template('episode_search.html', title='Episode Search', form=form)
+
+
+@application.route('/episode_create', methods=['GET', 'POST'])
+@login_required
+def episode_create():
+    return redirect(url_for('not_implemented'))
+
+
+@application.route('/reports', methods=['GET', 'POST'])
+@login_required
+def reports():
+    return redirect(url_for('not_implemented'))
 
 
 @application.route('/logout')

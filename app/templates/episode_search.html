@@ -31,7 +31,12 @@
                     {{ form.hospital_id.label(class='col-form-label') }}<br/>
                     {{ form.hospital_id(class='form-control') }}
                 </div>
-                <p>{{ form.submit(class='btn btn-primary') }}
+                <p>{{ form.submit(class='btn btn-primary', onclick="$('#spinner').show()") }}
+                <div class="d-flex justify-content-center">
+                    <div id="spinner" class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
                 <hr/>
             </form>
         </div>
@@ -80,9 +85,12 @@
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
+  $('#spinner').hide();
+
   $('#date').datepicker({
     format: "yyyy-mm-dd"
   });
 });
+
 </script>
 {% endblock %}

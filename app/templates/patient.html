@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <h1>Patient Details</h1>
+            <h1>{{ title }}</h1>
             <hr/>
             {% include 'forms/patient_form.html' %}
             {% if episodes %}
@@ -42,4 +42,12 @@
             </div>
             {% endif %}
         </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  $('#spinner').hide();
+});
+
+</script>
 {% endblock %}

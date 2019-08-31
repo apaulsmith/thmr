@@ -12,21 +12,20 @@
                     {{ form.username.label(class='col-form-label') }}<br/>
                     {{ form.username(class='form-control',autofocus=true,required=true) }}
                     {% for error in form.username.errors %}
-                    <div class="alert alert-danger" role="alert">
-                        [{{ error }}]
-                    </div>
-                    {% endfor %}
+                <div class="alert alert-danger" role="alert">
+                    [{{ error }}]
+                </div>
+                {% endfor %}
                 </p>
                 <p>
                     {{ form.password.label(class='col-form-label') }}<br/>
                     {{ form.password(class='form-control',required=true) }}
                     {% for error in form.username.errors %}
-                    <div class="alert alert-danger" role="alert">
-                        [{{ error }}]
-                    </div>
-                    {% endfor %}
+                <div class="alert alert-danger" role="alert">
+                    [{{ error }}]
+                </div>
+                {% endfor %}
                 </p>
-                <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
                 <p>{{ form.submit(class='btn btn-lg btn-primary btn-block') }}</p>
             </form>
         </div>

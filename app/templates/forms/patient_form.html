@@ -34,7 +34,12 @@
         {{ macros.with_errors(form.address) }}
     </div>
     {{ macros.with_created_by(form) }}
-    <p>{{ form.submit(class='btn btn-primary') }}
+    <p>{{ form.submit(class='btn btn-primary', onclick="$('#spinner').show()") }}
         <a href="{{ url_for('patient_search') }}" class="btn btn-secondary">Cancel</a>
     </p>
+    <div class="d-flex justify-content-center">
+        <div id="spinner" class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 </form>

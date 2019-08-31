@@ -26,7 +26,7 @@
             </div>
             <div class="card-body">
                 <ul class="list-unstyled mt-3 mb-4">
-                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('episode_search') }}">Report
+                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('episode_create') }}">Record
                         an new Episode</a>
                     <li><br/></li>
                     <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('episode_search') }}">Find
@@ -41,11 +41,11 @@
             <div class="card-body">
                 <ul class="list-unstyled mt-3 mb-4">
                     <li>
-                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Patient Reports</button>
+                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('reports') }}">Patient Reports</a>
                     </li>
                     <li><br/></li>
                     <li>
-                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Episode Reports</button>
+                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('reports') }}">Episode Reports</a>
                     </li>
                 </ul>
             </div>
