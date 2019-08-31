@@ -43,7 +43,7 @@ class Type(enum.Enum):
 class EpisodeType(enum.Enum):
     Surgery = 1
     FollowUp = 2
-    Other = 2
+    Other = 3
 
 
 #
@@ -94,7 +94,7 @@ class User(db.Model, ExtendedBase, UserMixin):
     }
 
     def __repr__(self):
-        return "{}: [id='{}', name='{}', email='{}'...]".format(self.__tablename__, self.id, self.name, self.email)
+        return self.name
 
 
 class EpisodeAttendee(db.Model, ExtendedBase):
@@ -126,16 +126,19 @@ class Patient(db.Model, ExtendedBase):
     hospital = relationship(Hospital)
 
     created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
-    created_by = Column('created_by', ForeignKey('Users.id'), nullable=False)
+    created_by_id = Column(ForeignKey('Users.id'), nullable=False)
+    created_by = relationship(User, foreign_keys=[created_by_id])
+
     updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
-    updated_by = Column('updated_by', ForeignKey('Users.id'), nullable=False)
+    updated_by_id = Column(ForeignKey('Users.id'), nullable=False)
+    updated_by = relationship(User, foreign_keys=[updated_by_id])
 
     __mapper_args__ = {
         "version_id_col": version_id
     }
 
     def __repr__(self):
-        return "{}: [id='{}', name='{}', ...]".format(self.__tablename__, self.id, self.name)
+        return self.name
 
 
 class Complication(db.Model, ExtendedBase):
@@ -228,8 +231,15 @@ class Episode(db.Model, ExtendedBase):
     surgery = relationship(Surgery)
 
     complications = relationship(Complication)
-
     comments = Column(String(LONG_TEXT_LENGTH), nullable=False, default='none')
+
+    created_at = Column('created_at', DateTime(), default=datetime.now, nullable=False)
+    created_by_id = Column(ForeignKey('Users.id'), nullable=False)
+    created_by = relationship(User, foreign_keys=[created_by_id])
+
+    updated_at = Column('updated_at', DateTime(), default=datetime.now, onupdate=datetime.now, nullable=False)
+    updated_by_id = Column(ForeignKey('Users.id'), nullable=False)
+    updated_by = relationship(User, foreign_keys=[updated_by_id])
 
     __mapper_args__ = {
         "version_id_col": version_id

@@ -7,13 +7,16 @@ from app.models import User, Patient, Hospital, Surgery, Side, Type, Cepod, Epis
     Procedure, Complication, EpisodeAttendee
 from app.tests import names
 
+TEST_ACCOUNT_EMAIL = 'thmr_test_account@example.com'
+TEST_ACCOUNT_PASSWORD = 'password'
+
 
 def create_sample_data(session, num_users: int, num_patients: int):
     users = _users(num_users)
     session.add_all(users)
     hospitals = _hospitals()
     session.add_all(hospitals)
-    patients = _patients(num_patients, hospitals)
+    patients = _patients(num_patients, hospitals, users)
     session.add_all(patients)
     session.add_all(_procedures())
 
@@ -24,7 +27,7 @@ def create_sample_data(session, num_users: int, num_patients: int):
         for i in range(0, random.randint(1, 5)):
             attendees.add(random.choice(users))
 
-        session.add(_episode(patient, procedure, attendees))
+        session.add(_episode(patient, procedure, users))
 
 
 def _procedures():
@@ -47,6 +50,8 @@ def _episode(patient, procedure, users):
         hospital=patient.hospital,
         surgery=surgery,
         complications=[Complication(date=d, comments="It's complicated...")],
+        created_by=random.choice(users),
+        updated_by=random.choice(users),
     )
 
     attendees = []
@@ -64,8 +69,8 @@ def _users(num: int) -> List[User]:
     users = []
 
     # Default test account so that we can always login!
-    test_user = User(name='Test, Account', email='thmr_test_account@example.com')
-    test_user.set_password('password')
+    test_user = User(name='Test, Account', email=TEST_ACCOUNT_EMAIL)
+    test_user.set_password(TEST_ACCOUNT_PASSWORD)
     users.append(test_user)
 
     existing_names = set()
@@ -87,7 +92,7 @@ def _users(num: int) -> List[User]:
     return users
 
 
-def _patients(num: int, hospitals: List[Hospital]) -> List[Patient]:
+def _patients(num: int, hospitals, users) -> List[Patient]:
     patients = []
     for i in range(0, num):
         gender = random.choice(['M', 'F'])
@@ -102,8 +107,8 @@ def _patients(num: int, hospitals: List[Hospital]) -> List[Patient]:
             address=names.address(),
             phone=names.phone(),
             hospital=random.choice(hospitals),
-            created_by=1,
-            updated_by=1,
+            created_by=random.choice(users),
+            updated_by=random.choice(users)
         ))
 
     return patients

@@ -25,18 +25,16 @@
                         <th scope="col">Gender</th>
                         <th scope="col">Phone</th>
                         <th scope="col">Address</th>
-                        <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for result in results %}
                     <tr>
-                        <th scope="row">{{ result.name }}</th>
-                        <td>{{ result.email }}</td>
+                        <td><a href="{{ url_for('patient', id=result.id) }}">{{ result.name }}</a></td>
+                        <td>{{ result.email }}</a></td>
                         <td>{{ result.gender }}</td>
                         <td>{{ result.phone }}</td>
                         <td>{{ result.address }}</td>
-                        <td><a href="{{ url_for('patient', id=result.id) }}">View/Edit</a></td>
                     </tr>
                     {% endfor %}
                     <tbody>

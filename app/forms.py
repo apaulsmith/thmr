@@ -8,7 +8,7 @@ from app.models import EpisodeType
 
 
 def choice_for_enum(enum, include_blank=False):
-    l = [(e.value, e.name) for e in enum]
+    l = [(e, e.name) for e in enum]
     if include_blank:
         l.insert(0, ('', '(Any)'))
     return l
@@ -21,14 +21,20 @@ def coerce_for_enum(enum):
 
         if isinstance(name, enum):
             return name
+
         try:
+            id = int(name)
             try:
-                id = int(name)
                 return enum(id)
-            except ValueError:
+            except KeyError:
+                raise ValueError(name)
+        except ValueError:
+            try:
+                if '.' in name:
+                    name = name[name.find('.')+1:]
                 return enum[name]
-        except KeyError:
-            raise ValueError(name)
+            except KeyError:
+                raise ValueError(name)
 
     return coerce
 
@@ -43,9 +49,14 @@ class LoginForm(FlaskForm):
 class PatientForm(FlaskForm):
     name = StringField('Name')
     email = StringField('Email')
+    hospital_id = SelectField('Hospital')
     gender = SelectField('Gender', choices=[('', 'Any'), ('M', 'Male'), ('F', 'Female')])
     phone = StringField('Phone #')
     address = TextAreaField('Address')
+    created_by = HiddenField('Created By')
+    created_at = HiddenField('Created At')
+    updated_by = HiddenField('Updated By')
+    updated_at = HiddenField('Updated At')
 
 
 class PatientSearchForm(PatientForm):
@@ -62,6 +73,10 @@ class EpisodeForm(FlaskForm):
     hospital_id = SelectField('Hospital')
     surgery_id = HiddenField('Surgery')
     comments = TextAreaField('Comments')
+    created_by = HiddenField('Created By')
+    created_at = HiddenField('Created At')
+    updated_by = HiddenField('Updated By')
+    updated_at = HiddenField('Updated At')
 
 
 class EpisodeEditForm(EpisodeForm):

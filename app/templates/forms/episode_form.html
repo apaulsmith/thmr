@@ -3,18 +3,22 @@
     <div class="form-group">
         {{ form.episode_type.label(class='col-form-label') }}<br/>
         {{ form.episode_type(class='form-control') }}
+        {{ macros.with_errors(form.episode_type) }}
     </div>
     <div class="form-group">
         {{ form.date.label(class='col-form-label') }}<br/>
         {{ form.date(class='form-control') }}
+        {{ macros.with_errors(form.date) }}
     </div>
     <div class="form-group">
         {{ form.patient_id.label(class='col-form-label') }}<br/>
         {{ form.patient_id(class='form-control',disabled=true) }}
+        {{ macros.with_errors(form.patient_id) }}
     </div>
     <div class="form-group">
         {{ form.hospital_id.label(class='col-form-label') }}<br/>
         {{ form.hospital_id(class='form-control') }}
+        {{ macros.with_errors(form.hospital_id) }}
     </div>
     <div>
         <label class="col-form-label">Attendees</label><br/>
@@ -41,6 +45,7 @@
     </div>
     <p>
         {{ form.surgery_id.label(class='col-form-label') }}<hr/>
+        {{ macros.with_errors(form.surgery_id) }}
         {% if episode.surgery %}
         <table class="table table-striped">
             <tbody>
@@ -134,7 +139,9 @@
     <div class="form-group">
         {{ form.comments.label(class='col-form-label') }}<br/>
         {{ form.comments(class='form-control') }}
+        {{ macros.with_errors(form.comments) }}
     </div>
+    {{ macros.with_created_by(form) }}
     <p>{{ form.submit(class='btn btn-primary') }}
         <a href="{{ url_for('patient_search') }}" class="btn btn-secondary">Cancel</a>
     </p>

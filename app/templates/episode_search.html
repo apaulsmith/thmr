@@ -36,11 +36,11 @@
             </form>
         </div>
     </div>
+    {% if results %}
     <div class="row">
         <div class="col-lg">
             <h2>Search Results</h2>
             <div>
-                {% if results %}
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -50,13 +50,12 @@
                         <th scope="col">Hospital</th>
                         <th scope="col">Surgery</th>
                         <th scope="col">Comments</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for result in results %}
                     <tr>
-                        <td>{{ result.episode_type.name }}</td>
+                        <td><a href="{{ url_for('episode', id=result.id) }}">{{ result.episode_type.name }}</a></td>
                         <td>{{ result.date }}</td>
                         <td>{{ result.patient.name }}</td>
                         <td>{{ result.hospital.name }}</td>
@@ -66,16 +65,17 @@
                         <td></td>
                         {% endif %}
                         <td>{{ result.comments }}</td>
-                        <td><a href="{{ url_for('episode', id=result.id) }}">View/Edit</a></td>
                     </tr>
                     {% endfor %}
                     <tbody>
                 </table>
                 {% else %}
                 <div class="alert alert-info" role="alert">
-                No results found
+                    No results found
                 </div>
                 {% endif %}
             </div>
         </div>
-        {% endblock %}
+    </div>
+</div>
+{% endblock %}

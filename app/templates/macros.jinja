@@ -1,0 +1,23 @@
+{% macro with_errors(field) %}
+{% if field.errors %}
+<div class="alert alert-danger" role="alert">
+    <ul>
+        {% for error in field.errors %}
+        <li>{{ error|e }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+
+{% macro with_created_by(form) %}
+<p class="font-weight-light">
+{% if form.created_by.object_data %}
+    Created by {{ form.created_by.object_data }} on {{ form.created_at.object_data|datetime  }}
+{% endif %}
+{% if form.updated_by.object_data %}
+    last updated by {{ form.updated_by.object_data }} on {{ form.updated_at.object_data|datetime  }}
+{% endif %}
+</p>
+{% endmacro %}

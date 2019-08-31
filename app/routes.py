@@ -1,3 +1,5 @@
+import logging
+
 from flask import current_app as application
 from flask import jsonify, request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
@@ -8,13 +10,22 @@ from app import db, login
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
 from app.models import User, Patient, Episode, Hospital
 from app.dao.dao import Dao
+from app.tests import data_generator
 from app.util.filter import like_all
 
 
 @login.user_loader
 def load_user(user_id):
+    if not isinstance(user_id, int):
+        user_id = int(user_id)
+
     u = db.session.query(User).filter(User.id == user_id).first()
     return u
+
+
+@application.route('/', methods=['GET'])
+def root():
+    return redirect(url_for('index'))
 
 
 @application.route('/index', methods=['GET'])
@@ -29,13 +40,20 @@ def login():
         return redirect(url_for('index'))
 
     form = LoginForm()
+
+    if application.config.get('DEFAULT_TEST_ACCOUNT_LOGIN'):
+        form.username.data = data_generator.TEST_ACCOUNT_EMAIL
+        form.password.data = data_generator.TEST_ACCOUNT_PASSWORD
+
     if form.validate_on_submit():
         user = db.session.query(User).filter_by(email=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        flash('Login successful for {}'.format(form.username.data))
+        login_msg = 'Login successful for {}'.format(form.username.data)
+        logging.info(login_msg)
+        flash(login_msg)
 
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
@@ -49,6 +67,8 @@ def login():
 @login_required
 def patient_search():
     form = PatientSearchForm()
+    form.hospital_id.choices = _hospital_id_choices(include_empty=True)
+
     if form.validate_on_submit():
         f = like_all({
             Patient.name: form.name.data,
@@ -58,10 +78,41 @@ def patient_search():
             Patient.address: form.address.data,
         })
 
+        if form.hospital_id.data != '':
+            f.append(Patient.hospital_id == form.hospital_id.data)
+
         patients = db.session.query(Patient).filter(f).order_by(Patient.name).all()
         return render_template('patient_search.html', title='Patient Search', form=form, results=patients)
 
     return render_template('patient_search.html', title='Patient Search', form=form)
+
+
+@application.route('/patient/create', methods=['GET', 'POST'])
+@login_required
+def patient_create():
+    patient = Patient()
+    episodes = []
+
+    form = PatientEditForm(obj=patient)
+    form.hospital_id.choices = _hospital_id_choices()
+
+    if form.validate_on_submit():
+        patient.name = form.name.data
+        patient.email = form.email.data
+        patient.hospital_id = form.hospital_id.data
+        patient.gender = form.gender.data
+        patient.phone1 = form.phone.data
+        patient.address = form.address.data
+
+        patient.created_by = current_user
+        patient.updated_by = current_user
+
+        db.session.add(patient)
+        db.session.commit()
+        flash('New patient details for {} have been registered.'.format(patient.name))
+        return redirect(url_for('patient', id=patient.id))
+
+    return render_template('patient.html', title='Register New Patient', form=form, episodes=episodes)
 
 
 @application.route('/patient/<int:id>', methods=['GET', 'POST'])
@@ -71,14 +122,21 @@ def patient(id):
     episodes = db.session.query(Episode).filter(Episode.patient_id == patient.id).all()
 
     form = PatientEditForm(obj=patient)
+    form.hospital_id.choices = _hospital_id_choices()
+
     if form.validate_on_submit():
         patient.name = form.name.data
         patient.email = form.email.data
+        patient.hospital_id = form.hospital_id.data
         patient.gender = form.gender.data
         patient.phone1 = form.phone.data
         patient.address = form.address.data
+        patient.updated_by = current_user
+
         db.session.commit()
+
         flash('Patient details have been updated.')
+        return redirect(url_for('patient', id=patient.id))
 
     return render_template('patient.html', title='Patient Details', form=form, episodes=episodes)
 
@@ -89,10 +147,8 @@ def episode(id):
     episode = db.session.query(Episode).filter(Episode.id == id).first()
 
     form = EpisodeEditForm(obj=episode)
-    form.hospital_id.choices = [(h.id, h.name) for h in
-                                db.session.query(Hospital).order_by(Hospital.name).all()]
-    form.patient_id.choices = [(h.id, h.name) for h in
-                               db.session.query(Patient).order_by(Patient.name).all()]
+    form.hospital_id.choices = _hospital_id_choices()
+    form.patient_id.choices = _patient_id_choices()
 
     if form.validate_on_submit():
         episode.episode_type = form.episode_type.data
@@ -101,8 +157,12 @@ def episode(id):
         episode.hospital_id = form.hospital_id.data
         episode.surgery_id = form.surgery_id.data
         episode.comments = form.comments.data
+        episode.updated_by = current_user
+
         db.session.commit()
+
         flash('Episode details have been updated.')
+        return redirect(url_for('episode', id=episode.id))
 
     return render_template('episode.html', title='Episode Details', form=form, episode=episode)
 
@@ -111,8 +171,7 @@ def episode(id):
 @login_required
 def episode_search():
     form = EpisodeSearchForm()
-    form.hospital_id.choices = [('', '(Any)')] + [(h.id, h.name) for h in
-                                                  db.session.query(Hospital).order_by(Hospital.name).all()]
+    form.hospital_id.choices = _hospital_id_choices(include_empty=True)
     form.patient_id.choices = [('', '(Any)')] + [(h.id, h.name) for h in
                                                  db.session.query(Patient).order_by(Patient.name).all()]
 
@@ -178,3 +237,32 @@ def update_entity(entity_name, id):
         d['id'] = id
 
     return dao.apply_update(d)
+
+
+def _field_errors(form):
+    errors = []
+    for field in form:
+        for error in field.errors:
+            errors.append((field.name, error))
+
+    return errors
+
+
+def _patient_id_choices(include_empty=False):
+    choices = [(str(h.id), h.name) for h in
+               db.session.query(Patient).order_by(Patient.name).all()]
+
+    if include_empty:
+        choices = [('', '(Any)')] + choices
+
+    return choices
+
+
+def _hospital_id_choices(include_empty=False):
+    choices = [(str(h.id), h.name) for h in
+               db.session.query(Hospital).order_by(Hospital.name).all()]
+
+    if include_empty:
+        choices = [('', '(Any)')] + choices
+
+    return choices

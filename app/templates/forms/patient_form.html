@@ -3,24 +3,38 @@
     <div class="form-group">
         {{ form.name.label(class='col-form-label') }}<br/>
         {{ form.name(class='form-control') }}
+        {{ macros.with_errors(form.name) }}
+
     </div>
     <div class="form-group">
         {{ form.email.label(class='col-form-label') }}<br/>
         {{ form.email(class='form-control') }}
+        {{ macros.with_errors(form.email) }}
+
     </div>
     <div class="form-group">
         {{ form.gender.label(class='col-form-label') }}<br/>
         {{ form.gender(class='form-control') }}
+        {{ macros.with_errors(form.gender) }}
     </div>
     <div class="form-group">
         {{ form.phone.label(class='col-form-label') }}<br/>
         {{ form.phone(class='form-control') }}
+        {{ macros.with_errors(form.phone) }}
+    </div>
+    <div class="form-group">
+        {{ form.hospital_id.label(class='col-form-label') }}<br/>
+        {{ form.hospital_id(class='form-control') }}
+        {{ macros.with_errors(form.hospital_id) }}
+
     </div>
     <div class="form-group">
         {{ form.address.label(class='col-form-label') }}<br/>
         {{ form.address(class='form-control') }}
+        {{ macros.with_errors(form.address) }}
     </div>
+    {{ macros.with_created_by(form) }}
     <p>{{ form.submit(class='btn btn-primary') }}
-    <a href="{{ url_for('patient_search') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ url_for('patient_search') }}" class="btn btn-secondary">Cancel</a>
     </p>
 </form>
