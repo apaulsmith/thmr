@@ -4,14 +4,52 @@
     <div class="jumbotron" style="background-color:#f5f5f5">
         <h1 class="display-4">Welcome to thmr!</h1>
         <p class="lead">The Tanzania Mesh Hernia Repair Registry</p>
-        <hr class="my-4">
-        <!-- <p>Get started with one of the options below.</p> -->
-        <p class="lead">
-            <a class="btn btn-primary btn-lg" href="{{ url_for('patient_create') }}">Register a new Patient</a>
-            <a class="btn btn-primary btn-lg" href="{{ url_for('patient_search') }}">Find a Patient</a>
-            <a class="btn btn-primary btn-lg" href="{{ url_for('episode_search') }}">Find an Episode</a>
-            <a class="btn btn-secondary btn-lg" href="{{ url_for('logout') }}">Logout</a>
-        </p>
+    </div>
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Patients</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('patient_create') }}">Register
+                        a new Patient</a></li>
+                    <li><br/></li>
+                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('patient_search') }}">Find
+                        an existing Patient</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Episodes</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('episode_search') }}">Report
+                        an new Episode</a>
+                    <li><br/></li>
+                    <li><a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('episode_search') }}">Find
+                        an existing Episode</a>
+                </ul>
+            </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Reports</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>
+                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Patient Reports</button>
+                    </li>
+                    <li><br/></li>
+                    <li>
+                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Episode Reports</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
