@@ -239,14 +239,18 @@ def logout():
 
 @application.route('/health_check', methods=['GET'])
 def health_check():
-    if not application:
-        raise ValueError('No application running!')
+    try:
+        if not application:
+            raise ValueError('No application running!')
 
-    if db.session.query(User).count() < 1:
-        raise ValueError('No users defined!')
+        if db.session.query(User).count() < 1:
+            raise ValueError('No users defined!')
 
-    # Return 204 No Content
-    return '', 204
+        logging.info('Health Check Passed')
+        return '', 204
+    except Exception as e:
+        logging.error('Health Check Failed!')
+        raise e
 
 
 @application.route('/thmr/data/<string:entity_name>', methods=['GET'])
