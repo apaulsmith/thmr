@@ -4,7 +4,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.ext.dateutil.fields import DateField
 from wtforms.validators import DataRequired
 
-from app.models import EpisodeType
+from app.models import EpisodeType, Cepod, Side, Type
 
 
 def choice_for_enum(enum, include_blank=False):
@@ -31,7 +31,7 @@ def coerce_for_enum(enum):
         except ValueError:
             try:
                 if '.' in name:
-                    name = name[name.find('.')+1:]
+                    name = name[name.find('.') + 1:]
                 return enum[name]
             except KeyError:
                 raise ValueError(name)
@@ -91,3 +91,28 @@ class EpisodeSearchForm(EpisodeForm):
                                choices=choice_for_enum(EpisodeType, include_blank=True),
                                coerce=coerce_for_enum(EpisodeType))
     submit = SubmitField('Search')
+
+
+class SurgeryForm(FlaskForm):
+    cepod = SelectField('CEPOD',
+                        choices=choice_for_enum(Cepod, include_blank=False),
+                        coerce=coerce_for_enum(Cepod))
+
+    date_of_discharge = DateField('Date')
+    side = SelectField('Side',
+                       choices=choice_for_enum(Side, include_blank=False),
+                       coerce=coerce_for_enum(Side))
+    primary = BooleanField('Primary?')
+    type = SelectField('Type',
+                       choices=choice_for_enum(Type, include_blank=False),
+                       coerce=coerce_for_enum(Type))
+
+    additional_procedure = TextAreaField('Additional Procedure')
+    antibiotics = TextAreaField('Antibiotics')
+    comments = TextAreaField('Comments')
+
+    opd_rv_date = DateField('RV Date')
+    opd_pain = StringField('Pain')
+    opd_numbness = StringField('Numbness')
+    opd_infection = StringField('Infection')
+    opd_comments = TextAreaField('Comments')

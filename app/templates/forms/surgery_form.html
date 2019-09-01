@@ -1,0 +1,80 @@
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.cepod.label(class='col-form-label') }}<br/>
+        {{ form.cepod(class='form-control') }}
+        {{ macros.with_errors(form.cepod) }}
+    </div>
+    <div class="form-group">
+        {{ form.date_of_discharge.label(class='col-form-label') }}<br/>
+        {{ form.date_of_discharge(class='form-control') }}
+        {{ macros.with_errors(form.date_of_discharge) }}
+
+    </div>
+    <div class="form-group">
+        {{ form.side.label(class='col-form-label') }}<br/>
+        {{ form.side(class='form-control') }}
+        {{ macros.with_errors(form.side) }}
+    </div>
+    <div class="form-group">
+        {{ form.primary.label(class='col-form-label') }}<br/>
+        {{ form.primary(class='form-control') }}
+        {{ macros.with_errors(form.primary) }}
+    </div>
+    <div class="form-group">
+        {{ form.type.label(class='col-form-label') }}<br/>
+        {{ form.type(class='form-control') }}
+        {{ macros.with_errors(form.type) }}
+    </div>
+    <div class="form-group">
+        {{ form.additional_procedure.label(class='col-form-label') }}<br/>
+        {{ form.additional_procedure(class='form-control') }}
+        {{ macros.with_errors(form.additional_procedure) }}
+    </div>
+    <div class="form-group">
+        {{ form.antibiotics.label(class='col-form-label') }}<br/>
+        {{ form.antibiotics(class='form-control') }}
+        {{ macros.with_errors(form.antibiotics) }}
+    </div>
+    <div class="form-group">
+        {{ form.comments.label(class='col-form-label') }}<br/>
+        {{ form.comments(class='form-control') }}
+        {{ macros.with_errors(form.comments) }}
+    </div>
+    <hr/>
+    <h3>OPD Details</h3>
+    <div class="form-group">
+        {{ form.opd_rv_date.label(class='col-form-label') }}<br/>
+        {{ form.opd_rv_date(class='form-control') }}
+        {{ macros.with_errors(form.opd_rv_date) }}
+    </div>
+    <div class="form-group">
+        {{ form.opd_pain.label(class='col-form-label') }}<br/>
+        {{ form.opd_pain(class='form-control') }}
+        {{ macros.with_errors(form.opd_pain) }}
+    </div>
+    <div class="form-group">
+        {{ form.opd_pain.label(class='col-form-label') }}<br/>
+        {{ form.opd_pain(class='form-control') }}
+        {{ macros.with_errors(form.opd_pain) }}
+    </div>
+    <div class="form-group">
+        {{ form.opd_numbness.label(class='col-form-label') }}<br/>
+        {{ form.opd_numbness(class='form-control') }}
+        {{ macros.with_errors(form.opd_numbness) }}
+    </div>
+    <div class="form-group">
+        {{ form.opd_infection.label(class='col-form-label') }}<br/>
+        {{ form.opd_infection(class='form-control') }}
+        {{ macros.with_errors(form.opd_infection) }}
+    </div>
+    <div class="form-group">
+        {{ form.opd_comments.label(class='col-form-label') }}<br/>
+        {{ form.opd_comments(class='form-control') }}
+        {{ macros.with_errors(form.opd_comments) }}
+    </div>
+    {{ macros.with_created_by(form) }}
+    <p>{{ form.submit(class='btn btn-primary', onclick="$('#spinner').show()") }}
+        <a href="{{ url_for('episode_search') }}" class="btn btn-secondary">Cancel</a>
+    </p>
+</form>
