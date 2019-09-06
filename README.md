@@ -96,3 +96,12 @@ The interface is built around the actions of finding a patient, creating a new p
 - To record a new Episode -- Find the patient, click record new episode 
 - To edit an existing episode -- Find the patient, pick the episode to edit, click view/edit, update the details and click save.
 
+##Infrastructure
+The application is deployed on AWS Elastic Beanstalk. The database is a mySQL db deployed in RDS but via. EB.
+
+![alt text](aws-topology.png "AWS Topology")
+
+The load balancer fronts https to the world and redirect to http internally within EB. The https certificate is also setup through AWS for `*.swiftss.org`.
+
+Custom domain name routing is achieved by a CNAME entry on the swiftss.org domain pointing to the EB instance. 
+  
