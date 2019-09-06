@@ -34,10 +34,12 @@ $ python run.py --help
 ## Layout
 Thmr follows the standard layout for a Flask application.
 
-- application.py provides WSGI
+- application.py provides WSGI entry point
 - app/routes defines the URL routing and is the main entry point for the application 
 - app/forms uses WTForms to define the form data model
 - app/models defines the underlying data models in SQLAlchemy
+- app/formatters provides front-end formatters for types such as dates, datetimes, etc.
+- app/reporting defines functions that convert the underlying data models into Pandas DataFrames for reporting.
 
 ## Data Model
 The data model is built around Patients and Episodes.
