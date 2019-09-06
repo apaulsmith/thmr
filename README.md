@@ -40,17 +40,56 @@ Thmr follows the standard layout for a Flask application.
 - app/models defines the underlying data models in SQLAlchemy
 
 ## Data Model
-The data model is built around Patients and Episodes. Patients represent specific individuals and Episodes are the recorded medical events of those individuals. Patients and Episodes are versioned.
+The data model is built around Patients and Episodes.
 
-All versions are retained and the updating user and time stamp are recorded on each version. Removal or deletion of a Patient or Episode is done via a soft-delete flag however this is just another attribute and so can be edited like any other property meaning that ‘deleted’ records are always available and can be restored at any point.
+### Entities
+![alt text](er-diagram.png "ER Diagram")
+
+#### Patient
+Represents specific individuals.
 
 Patients are designed with minimal assumptions on the uniqueness or structure of any specific characteristic. Whilst each Patient is unique and has a unique numeric id no uniqueness restrictions are placed on any other attribute. Names, phone numbers and addresses are all considered to be non-unique and with the exception of name are all optional. Date of birth is captured as a birth year and separate full date as many Patients are anticipated not to know their full dob. Names, phone numbers and addresses are captured as unstructured text for maximum flexibility. The primary consideration is to ensure all Patients can be recorded. Not being able to record a Patient because they do not meet an arbitrary system defined definition of their attributes is to be avoided, we would rather capture duplicate Patient records than not be able to capture a Patient.
 
+
+#### Episode
+The recorded medical events of Patients.
+
 Episodes record any medical activity or medical event of a Patient. Each episode links together a Patient, on a date, at a Hospital with the list of attending health care staff and any Complications that were observed or occurred. Episodes have an episode type and each episode type can extend the attributes captured using an additional child table. Their are two primary Episode types modelled, Surgery and FollowUp. FollowUp records no additional fields whilst Surgery extends the Episode to capture which Procedure was performed and a number of operative and post-operative observations.
+
+##### Complication
+An optional dated log of events associated with an Episode.
+
+##### Surgery
+An extension table to record surgery specific details for an Episode.
+
+##### Procedure
+An extension table for procedure specific details of a Surgery.
+
+#### User
+Medical staff who can use the application and recorded as attendees at an Episode.
 
 The medical team are stored as users. Their is currently no separation between people who use the system and people who attend episodes and it is not necessary for a user to login to be captured or associated with an Episode.
 
-## Interface
+
+#### Hospital
+A place Episodes occur at and Patients are initially registered at.
+
+### Versioning
+All versions are retained and the updating user and time stamp are recorded on each version. Removal or deletion of a Patient or Episode is done via a soft-delete flag however this is just another attribute and so can be edited like any other property meaning that ‘deleted’ records are always available and can be restored at any point.
+
+### Delete
+*_Not Yet Implemented!!!_*
+
+Users, Patients and Episodes are never removed from the database but flagged as not longer active via. a soft-delete flag.
+
+### Data Retention
+
+#### Backups
+Incremental database backups are taken daily and archived into S3 (_need more details here!_).
+
+Full backups are not currently taken!
+
+## Interface & Navigation
 The interface is built around the actions of finding a patient, creating a new patient or finding an episode. Recording, viewing or editing an episode happens off these launch points.
 
 - To edit a Patients details -- Find the Patient, update their details and click save. 
