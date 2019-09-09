@@ -177,8 +177,7 @@ def episode(id):
 def episode_search():
     form = EpisodeSearchForm()
     form.hospital_id.choices = _hospital_id_choices(include_empty=True)
-    form.patient_id.choices = [('', '(Any)')] + [(h.id, h.name) for h in
-                                                 db.session.query(Patient).order_by(Patient.name).all()]
+    form.patient_id.choices = _patient_id_choices(include_empty=True)
 
     if form.is_submitted():
         filter = []
@@ -200,7 +199,29 @@ def episode_search():
 @application.route('/episode_create', methods=['GET', 'POST'])
 @login_required
 def episode_create():
-    return redirect(url_for('not_implemented'))
+    episode = Episode()
+    form = EpisodeEditForm(obj=episode)
+    form.hospital_id.choices = _hospital_id_choices()
+    form.patient_id.choices = _patient_id_choices()
+
+    if form.validate_on_submit():
+        episode.episode_type = form.episode_type.data
+        episode.date = form.date.data
+        episode.patient_id = form.patient_id.data
+        episode.hospital_id = form.hospital_id.data
+        episode.surgery_id = form.surgery_id.data
+        episode.comments = form.comments.data
+
+        episode.created_by = current_user
+        episode.updated_by = current_user
+
+        db.session.add(episode)
+        db.session.commit()
+
+        flash('Episode details have been recorded.')
+        return redirect(url_for('episode', id=episode.id))
+
+    return render_template('episode.html', title='Record Episode Details', form=form, episode=episode)
 
 
 @application.route('/typeahead/patients', methods=['GET'])
@@ -225,14 +246,18 @@ def logout():
 
 @application.route('/health_check', methods=['GET'])
 def health_check():
-    if not application:
-        raise ValueError('No application running!')
+    try:
+        if not application:
+            raise ValueError('No application running!')
 
-    if db.session.query(User).count() < 1:
-        raise ValueError('No users defined!')
+        if db.session.query(User).count() < 1:
+            raise ValueError('No users defined!')
 
-    # Return 204 No Content
-    return '', 204
+        logging.info('Health Check Passed')
+        return '', 204
+    except Exception as e:
+        logging.error('Health Check Failed!')
+        raise e
 
 
 @application.route('/thmr/data/<string:entity_name>', methods=['GET'])

@@ -13,8 +13,9 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.css"/>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+    {% include 'favicon.html' %}
 
-    <title>{% block title %}{% endblock %}</title>
+    <title>Tanzania Mesh Hernia Repair Registry</title>
     {% block head %}
     {% endblock %}
 </head>
@@ -27,7 +28,7 @@
 <div class="alert alert-info" role="alert">
     <ul>
         {% for message in messages %}
-        <li>{{ message }}</li>
+            <li>{{ message }}</li>
         {% endfor %}
     </ul>
 </div>
