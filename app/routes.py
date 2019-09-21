@@ -224,6 +224,13 @@ def episode_create():
     return render_template('episode.html', title='Record Episode Details', form=form, episode=episode)
 
 
+@application.route('/typeahead/patients', methods=['GET'])
+@login_required
+def typeahead_patients():
+    names = db.session.query(Patient.name).all()
+    return jsonify(names)
+
+
 @application.route('/reports', methods=['GET', 'POST'])
 @login_required
 def reports():
