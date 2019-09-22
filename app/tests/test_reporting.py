@@ -1,16 +1,20 @@
+from builtins import len
+
 from app import reporting
 from app.models import Patient, Episode
 
 
 def test_patients(database_session):
     users = database_session.query(Patient).all()
-    df = reporting.patients_as_df(users)
+    d = reporting.patients_as_dict(users)
 
-    assert len(df) == len(users)
+    for k, v in d.items():
+        assert len(v) == len(users)
 
 
 def test_episodes(database_session):
     episodes = database_session.query(Episode).all()
-    df = reporting.episodes_as_df(episodes)
+    d = reporting.episodes_as_dict(episodes)
 
-    assert len(df) == len(episodes)
+    for k, v in d.items():
+        assert len(v) == len(episodes)

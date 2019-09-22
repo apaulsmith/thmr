@@ -41,11 +41,11 @@
             <div class="card-body">
                 <ul class="list-unstyled mt-3 mb-4">
                     <li>
-                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('reports') }}">Patient Reports</a>
+                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('report', report_name='Patient') }}">Patient Reports</a>
                     </li>
                     <li><br/></li>
                     <li>
-                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('reports') }}">Episode Reports</a>
+                        <a class="btn btn-lg btn-block btn-outline-primary" href="{{ url_for('report', report_name='Episode') }}">Episode Reports</a>
                     </li>
                 </ul>
             </div>

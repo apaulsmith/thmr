@@ -1,10 +1,25 @@
-def patients_as_df(patients):
-    df = []
+from app.util import collection_utils
+import pandas as pd
+import tempfile
+
+def to_excel(d):
+    df = pd.DataFrame.from_dict(d)
+
+    h, path = tempfile.mkstemp(suffix='.xlsx', prefix='report')
+    df.to_excel(path,
+                index=False)
+    return path
+
+def patients_as_dict(patients):
+    d = None
     for patient in patients:
         row = _patient_as_dict(patient)
-        df.append(row)
+        if d is None:
+            d = row
+        else:
+            collection_utils.append_dicts(d, row)
 
-    return df
+    return d
 
 
 def _patient_as_dict(patient):
@@ -30,13 +45,16 @@ def _hospital_as_dict(hospital):
     }
 
 
-def episodes_as_df(episodes):
-    df = []
+def episodes_as_dict(episodes):
+    d = None
     for episode in episodes:
         row = _episode_as_dict(episode)
-        df.append(row)
+        if d is None:
+            d = row
+        else:
+            collection_utils.append_dicts(d, row)
 
-    return df
+    return d
 
 
 def _episode_as_dict(episode):

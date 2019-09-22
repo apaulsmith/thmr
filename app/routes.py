@@ -1,15 +1,14 @@
 import logging
-
-from flask import current_app as application
+from flask import current_app as application, send_file
 from flask import jsonify, request, render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import and_
 from werkzeug.urls import url_parse
 
-from app import db, login
+from app import db, login, reporting
+from app.dao.dao import Dao
 from app.forms import LoginForm, PatientSearchForm, PatientEditForm, EpisodeEditForm, EpisodeSearchForm
 from app.models import User, Patient, Episode, Hospital
-from app.dao.dao import Dao
 from app.tests import data_generator
 from app.util.filter import like_all
 
@@ -231,10 +230,30 @@ def typeahead_patients():
     return jsonify(names)
 
 
-@application.route('/reports', methods=['GET', 'POST'])
+@application.route('/report', methods=['GET'])
 @login_required
-def reports():
-    return redirect(url_for('not_implemented'))
+def report_index():
+    return render_template('report.html', title='Reporting')
+
+
+@application.route('/report/<string:report_name>', methods=['GET', 'POST'])
+@login_required
+def report(report_name):
+    path = reporting.to_excel(_run_report(report_name))
+    return send_file(filename_or_fp=path,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     attachment_filename=report_name + '.xlsx',
+                     as_attachment=True)
+
+
+def _run_report(report_name):
+    if report_name.lower() == 'patient':
+        patients = db.session.query(Patient).order_by(Patient.name).all()
+        d = reporting.patients_as_dict(patients)
+    elif report_name.lower() == 'episode':
+        episodes = db.session.query(Episode).order_by(Episode.date).all()
+        d = reporting.episodes_as_dict(episodes)
+    return d
 
 
 @application.route('/logout')
