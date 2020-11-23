@@ -22,4 +22,4 @@ RUN pip install pandas
 COPY . .
 
 # command to run on container start
-CMD [ "python", "./run.py"," --flask","--reset-db"," --generate" ]
+CMD [ "python", "./run.py","--flask","--reset-db","--generate" ]

@@ -1,4 +1,4 @@
-import distutils
+from distutils.util import strtobool
 import logging
 import os
 
@@ -47,7 +47,7 @@ def create_app(unit_test=False):
         SQLALCHEMY_POOL_RECYCLE=280,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         WTF_CSRF_ENABLED=not unit_test,
-        DEFAULT_TEST_ACCOUNT_LOGIN=bool(distutils.util.strtobool(os.environ.get('DEFAULT_TEST_ACCOUNT_LOGIN', 'False')))
+        DEFAULT_TEST_ACCOUNT_LOGIN=bool(strtobool(os.environ.get('DEFAULT_TEST_ACCOUNT_LOGIN', 'False')))
     )
 
     # Initialize Plugins
